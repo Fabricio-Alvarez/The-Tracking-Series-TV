@@ -1,0 +1,59 @@
+# Cursor Rules para TV Tracker
+
+## Descripción del Proyecto
+
+Esta es una aplicación de tracking de series de TV construida con Vue 3, Pinia y TheTVDB API. La aplicación permite buscar series, agregarlas a watchlist, marcarlas como vistas y favoritos.
+
+## Tecnologías
+
+- Vue 3 con Composition API
+- TypeScript
+- Pinia para estado global
+- Vue Router para navegación
+- TheTVDB API v4
+- Ionicons para iconos
+- CSS personalizado con tema oscuro
+
+## Estructura del Proyecto
+
+```
+src/
+├── components/          # Componentes reutilizables
+├── views/              # Vistas de la aplicación
+├── stores/             # Estado global con Pinia
+├── services/           # Servicios externos (API)
+└── router/             # Configuración de rutas
+```
+
+## Reglas de Desarrollo
+
+1. Siempre usar TypeScript con tipos explícitos
+2. Usar Composition API con <script setup>
+3. Seguir el patrón de diseño oscuro existente
+4. Manejar errores de API apropiadamente
+5. Usar Pinia para estado global
+6. Mantener componentes reutilizables
+
+## Problema Actual
+
+La API key de TheTVDB no está autorizada. Necesitamos:
+
+1. Verificar la API key
+2. Implementar autenticación correcta
+3. Manejar errores de autorización
+
+## Funcionalidades Principales
+
+- Búsqueda de series
+- Watchlist, Watched, Favorites
+- Persistencia con localStorage
+- Navegación entre pantallas
+- Diseño responsive
+
+## Estilo de Código
+
+- Usar camelCase para variables y funciones
+- PascalCase para componentes
+- Comentarios en español
+- Manejo de errores con try-catch
+- Estados de carga apropiados
