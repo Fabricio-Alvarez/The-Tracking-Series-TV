@@ -4,6 +4,7 @@ import MyShowsScreen from '@/views/MyShowsScreen.vue'
 import WatchlistView from '@/views/WatchlistView.vue'
 import WatchedView from '@/views/WatchedView.vue'
 import FavoritesView from '@/views/FavoritesView.vue'
+import ShowDetailView from '@/views/ShowDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,12 @@ const router = createRouter({
       path: '/favorites',
       name: 'favorites',
       component: FavoritesView,
+    },
+    {
+      path: '/show/:id',
+      name: 'show-detail',
+      component: ShowDetailView,
+      props: true,
     },
   ],
 })

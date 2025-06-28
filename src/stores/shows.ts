@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Movie } from '@/services/tvdbService'
 import TursoService, { type User } from '@/services/tursoService'
+import TVDBService from '@/services/tvdbService'
 
 export const useShowsStore = defineStore('shows', () => {
   // Estado de búsqueda
@@ -80,7 +81,7 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      await TursoService.addUserShow(currentUser.value.id, movie.id, 'watchlist')
+      await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'watchlist')
       if (!watchlist.value.find((m) => m.id === movie.id)) {
         watchlist.value.push(movie)
       }
@@ -94,27 +95,27 @@ export const useShowsStore = defineStore('shows', () => {
     }
   }
 
-  async function removeFromWatchlist(movieId: string) {
+  async function removeFromWatchlist(movieId: string | number) {
     if (!currentUser.value) {
       // Fallback a localStorage
-      watchlist.value = watchlist.value.filter((m) => m.id !== movieId)
+      watchlist.value = watchlist.value.filter((m) => String(m.id) !== String(movieId))
       saveToLocalStorage('watchlist', watchlist.value)
       return
     }
 
     try {
-      await TursoService.removeUserShow(currentUser.value.id, movieId, 'watchlist')
-      watchlist.value = watchlist.value.filter((m) => m.id !== movieId)
+      await TursoService.removeUserShow(currentUser.value.id, String(movieId), 'watchlist')
+      watchlist.value = watchlist.value.filter((m) => String(m.id) !== String(movieId))
     } catch (error) {
       console.error('Error al remover de watchlist:', error)
       // Fallback a localStorage
-      watchlist.value = watchlist.value.filter((m) => m.id !== movieId)
+      watchlist.value = watchlist.value.filter((m) => String(m.id) !== String(movieId))
       saveToLocalStorage('watchlist', watchlist.value)
     }
   }
 
-  function isInWatchlist(movieId: string): boolean {
-    return watchlist.value.some((m) => m.id === movieId)
+  function isInWatchlist(movieId: string | number): boolean {
+    return watchlist.value.some((m) => String(m.id) === String(movieId))
   }
 
   // Métodos para watched
@@ -129,7 +130,7 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      await TursoService.addUserShow(currentUser.value.id, movie.id, 'watched')
+      await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'watched')
       if (!watched.value.find((m) => m.id === movie.id)) {
         watched.value.push(movie)
       }
@@ -143,27 +144,27 @@ export const useShowsStore = defineStore('shows', () => {
     }
   }
 
-  async function removeFromWatched(movieId: string) {
+  async function removeFromWatched(movieId: string | number) {
     if (!currentUser.value) {
       // Fallback a localStorage
-      watched.value = watched.value.filter((m) => m.id !== movieId)
+      watched.value = watched.value.filter((m) => String(m.id) !== String(movieId))
       saveToLocalStorage('watched', watched.value)
       return
     }
 
     try {
-      await TursoService.removeUserShow(currentUser.value.id, movieId, 'watched')
-      watched.value = watched.value.filter((m) => m.id !== movieId)
+      await TursoService.removeUserShow(currentUser.value.id, String(movieId), 'watched')
+      watched.value = watched.value.filter((m) => String(m.id) !== String(movieId))
     } catch (error) {
       console.error('Error al remover de watched:', error)
       // Fallback a localStorage
-      watched.value = watched.value.filter((m) => m.id !== movieId)
+      watched.value = watched.value.filter((m) => String(m.id) !== String(movieId))
       saveToLocalStorage('watched', watched.value)
     }
   }
 
-  function isInWatched(movieId: string): boolean {
-    return watched.value.some((m) => m.id === movieId)
+  function isInWatched(movieId: string | number): boolean {
+    return watched.value.some((m) => String(m.id) === String(movieId))
   }
 
   // Métodos para favorites
@@ -178,7 +179,7 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      await TursoService.addUserShow(currentUser.value.id, movie.id, 'favorites')
+      await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'favorites')
       if (!favorites.value.find((m) => m.id === movie.id)) {
         favorites.value.push(movie)
       }
@@ -192,27 +193,27 @@ export const useShowsStore = defineStore('shows', () => {
     }
   }
 
-  async function removeFromFavorites(movieId: string) {
+  async function removeFromFavorites(movieId: string | number) {
     if (!currentUser.value) {
       // Fallback a localStorage
-      favorites.value = favorites.value.filter((m) => m.id !== movieId)
+      favorites.value = favorites.value.filter((m) => String(m.id) !== String(movieId))
       saveToLocalStorage('favorites', favorites.value)
       return
     }
 
     try {
-      await TursoService.removeUserShow(currentUser.value.id, movieId, 'favorites')
-      favorites.value = favorites.value.filter((m) => m.id !== movieId)
+      await TursoService.removeUserShow(currentUser.value.id, String(movieId), 'favorites')
+      favorites.value = favorites.value.filter((m) => String(m.id) !== String(movieId))
     } catch (error) {
       console.error('Error al remover de favorites:', error)
       // Fallback a localStorage
-      favorites.value = favorites.value.filter((m) => m.id !== movieId)
+      favorites.value = favorites.value.filter((m) => String(m.id) !== String(movieId))
       saveToLocalStorage('favorites', favorites.value)
     }
   }
 
-  function isInFavorites(movieId: string): boolean {
-    return favorites.value.some((m) => m.id === movieId)
+  function isInFavorites(movieId: string | number): boolean {
+    return favorites.value.some((m) => String(m.id) === String(movieId))
   }
 
   // Cargar shows del usuario
@@ -245,6 +246,35 @@ export const useShowsStore = defineStore('shows', () => {
     watchlist.value = loadFromLocalStorage('watchlist')
     watched.value = loadFromLocalStorage('watched')
     favorites.value = loadFromLocalStorage('favorites')
+  }
+
+  function getShowById(id: string) {
+    // Buscar en todas las listas
+    return (
+      watchlist.value.find((m) => String(m.id) === String(id)) ||
+      watched.value.find((m) => String(m.id) === String(id)) ||
+      favorites.value.find((m) => String(m.id) === String(id)) ||
+      searchResults.value.find((m) => String(m.id) === String(id))
+    )
+  }
+
+  async function fetchShowById(id: string): Promise<Movie | null> {
+    // Buscar primero en las listas locales
+    let show = getShowById(id)
+    if (show) return show
+    // Si no está, buscar en la API
+    const apiShow = await TVDBService.getShowDetails(String(id))
+    if (apiShow) {
+      searchResults.value.push(apiShow)
+      return apiShow
+    }
+    return null
+  }
+
+  function addShowsToResults(shows: Movie[]) {
+    const existingIds = new Set(searchResults.value.map(s => String(s.id)))
+    const newShows = shows.filter(s => !existingIds.has(String(s.id)))
+    searchResults.value.push(...newShows)
   }
 
   return {
@@ -292,5 +322,10 @@ export const useShowsStore = defineStore('shows', () => {
     // Persistencia
     initializeFromStorage,
     loadUserShows,
+
+    getShowById,
+    fetchShowById,
+
+    addShowsToResults,
   }
 })

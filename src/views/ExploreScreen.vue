@@ -5,7 +5,7 @@
       <div class="shows-grid">
         <MovieCard
           v-for="movie in searchResults"
-          :key="movie.id"
+          :key="movie.id as string"
           :movie="movie"
           :show-rating="true"
           :show-year="true"
@@ -35,7 +35,7 @@
           <div v-else class="shows-grid">
             <MovieCard
               v-for="movie in popularSeries"
-              :key="movie.id"
+              :key="movie.id as string"
               :movie="movie"
               :show-rating="true"
               :show-year="true"
@@ -59,7 +59,7 @@
           <div v-else class="shows-grid">
             <MovieCard
               v-for="movie in recommendedSeries"
-              :key="movie.id"
+              :key="movie.id as string"
               :movie="movie"
               :show-rating="true"
               :show-year="true"
@@ -77,13 +77,14 @@ import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
 import { batchSearchTheTVDBExact } from '@/services/tvdbService'
 import { useRoute } from 'vue-router'
+import type { Movie } from '@/services/tvdbService'
 
 const showsStore = useShowsStore()
 const searchQuery = computed(() => showsStore.searchQuery)
 const searchResults = computed(() => showsStore.searchResults)
 
-const popularSeries = ref([])
-const recommendedSeries = ref([])
+const popularSeries = ref<Movie[]>([])
+const recommendedSeries = ref<Movie[]>([])
 const isLoadingPopular = ref(false)
 const isLoadingRecommended = ref(false)
 const popularError = ref('')
@@ -98,6 +99,7 @@ const loadPopularShows = async () => {
       'Dark', 'The Boys', 'Better Call Saul', 'The Witcher',
       'Money Heist', 'Ozark', 'Westworld', 'The Office',
     ])
+    showsStore.addShowsToResults(popularSeries.value)
   } catch (error) {
     popularError.value = 'Error al cargar series populares'
   } finally {
@@ -113,6 +115,7 @@ const loadRecommendedShows = async () => {
       'The Expanse', 'Succession', 'Barry', 'The Leftovers',
       'Atlanta', 'The Good Place', 'Severance', 'Ted Lasso',
     ])
+    showsStore.addShowsToResults(recommendedSeries.value)
   } catch (error) {
     recommendedError.value = 'Error al cargar series recomendadas'
   } finally {

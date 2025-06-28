@@ -1,5 +1,5 @@
 <template>
-  <div class="movie-item">
+  <div class="movie-item" @dblclick="goToDetail" @click="handleCardClick">
     <div class="movie-card" @click="$emit('click', movie)">
       <div v-if="showRating" class="movie-rating">{{ movie.rating }}</div>
       <img :src="movie.image" :alt="movie.title" class="movie-image" @error="handleImageError" />
@@ -45,6 +45,7 @@
 import { computed, ref } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import type { Movie } from '@/services/tvdbService'
+import { useRouter } from 'vue-router'
 
 interface Props {
   movie: Movie
@@ -59,6 +60,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const showsStore = useShowsStore()
 const isLoading = ref(false)
+const router = useRouter()
 
 // Computed properties para verificar estado
 const isInWatchlist = computed(() => showsStore.isInWatchlist(props.movie.id))
@@ -120,6 +122,20 @@ const toggleFavorites = async () => {
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement
   img.src = 'https://via.placeholder.com/300x450/333/fff?text=No+Image'
+}
+
+function goToDetail() {
+  router.push({ name: 'show-detail', params: { id: String(props.movie.id) } })
+}
+
+function handleCardClick(event: MouseEvent) {
+  // Si el click fue en un botón de acción, no navegar
+  const target = event.target as HTMLElement
+  if (target.closest('.action-btn')) return
+  // En móvil, un solo toque/clic abre el detalle
+  if (window.innerWidth <= 768) {
+    goToDetail()
+  }
 }
 </script>
 

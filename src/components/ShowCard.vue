@@ -1,7 +1,7 @@
 <template>
-  <div class="show-card">
+  <div class="show-card" @dblclick="goToDetail">
     <div class="show-image">
-      <img :src="show.poster" :alt="show.name" @error="handleImageError" />
+      <img :src="show.image" :alt="show.title" @error="handleImageError" />
       <div class="show-overlay">
         <div class="show-actions">
           <button
@@ -30,7 +30,7 @@
     </div>
 
     <div class="show-info">
-      <h3 class="show-title">{{ show.name }}</h3>
+      <h3 class="show-title">{{ show.title }}</h3>
       <p class="show-overview">{{ truncatedOverview }}</p>
 
       <div class="show-details">
@@ -40,7 +40,7 @@
       </div>
 
       <div class="show-date">
-        <span>Estreno: {{ formatDate(show.firstAired) }}</span>
+        <span>Año: {{ show.year }}</span>
       </div>
     </div>
   </div>
@@ -48,20 +48,22 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
-import type { Show } from '@/stores/shows'
+import type { Movie } from '@/services/tvdbService'
 
 interface Props {
-  show: Show
+  show: Movie
 }
 
 const props = defineProps<Props>()
 const showsStore = useShowsStore()
+const router = useRouter()
 
 // Computed properties
 const truncatedOverview = computed(() => {
   const maxLength = 150
-  return props.show.overview.length > maxLength
+  return props.show.overview && props.show.overview.length > maxLength
     ? props.show.overview.substring(0, maxLength) + '...'
     : props.show.overview
 })
@@ -71,7 +73,7 @@ const isInWatched = computed(() => showsStore.isInWatched(props.show.id))
 const isInFavorites = computed(() => showsStore.isInFavorites(props.show.id))
 
 const statusClass = computed(() => {
-  const status = props.show.status.toLowerCase()
+  const status = (props.show.status || '').toLowerCase()
   if (status.includes('running') || status.includes('continuing')) return 'status-running'
   if (status.includes('ended') || status.includes('canceled')) return 'status-ended'
   return 'status-unknown'
@@ -107,9 +109,8 @@ const handleImageError = (event: Event) => {
   img.src = '/placeholder-poster.jpg'
 }
 
-const formatDate = (dateString: string) => {
-  if (dateString === 'Fecha no disponible') return dateString
-
+const formatDate = (dateString?: string) => {
+  if (!dateString || dateString === 'Fecha no disponible') return 'Fecha no disponible'
   try {
     const date = new Date(dateString)
     return date.toLocaleDateString('es-ES', {
@@ -120,6 +121,10 @@ const formatDate = (dateString: string) => {
   } catch {
     return dateString
   }
+}
+
+function goToDetail() {
+  router.push({ name: 'show-detail', params: { id: String(props.show.id) } })
 }
 </script>
 

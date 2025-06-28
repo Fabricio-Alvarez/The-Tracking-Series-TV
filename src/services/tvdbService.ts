@@ -34,6 +34,9 @@ export interface Movie {
   overview?: string
   status?: string
   network?: string
+  genres?: string[]
+  creators?: string[]
+  seasons?: number
 }
 
 export class TVDBService {
@@ -102,12 +105,77 @@ export class TVDBService {
   static async getShowDetails(showId: string): Promise<Movie | null> {
     await this.authenticate()
     try {
+      // 1. Detalles principales
       const response = await tvdbApi.get(`/series/${showId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       const show = response.data.data
+
+      // 2. Géneros: si vienen como IDs, obtener nombres
+      let genres: string[] = []
+      if (Array.isArray(show.genres) && show.genres.length > 0 && typeof show.genres[0] !== 'string') {
+        // Si son objetos
+        genres = show.genres.map((g: any) => g.name || g)
+      } else if (Array.isArray(show.genres) && typeof show.genres[0] === 'string') {
+        // Si son IDs, buscar nombres
+        try {
+          const genresResp = await tvdbApi.get('/genres', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+          const genresMap: Record<string, string> = {}
+          for (const g of genresResp.data.data) {
+            genresMap[String(g.id)] = g.name
+          }
+          genres = show.genres.map((id: string) => genresMap[String(id)] || id)
+        } catch {}
+      } else if (typeof show.genre === 'string') {
+        genres = [show.genre]
+      } else if (Array.isArray(show.tags)) {
+        genres = show.tags.map((t: any) => t.name || t)
+      }
+
+      // 3. Creadores: llamada a /series/{id}/people
+      let creators: string[] = []
+      try {
+        const peopleResp = await tvdbApi.get(`/series/${showId}/people`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        const people = peopleResp.data.data || []
+        creators = people.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('creator')).map((p: any) => p.name)
+        // Fallback: si no hay creadores, usar escritores principales
+        if (creators.length === 0) {
+          creators = people.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('writer')).map((p: any) => p.name)
+        }
+      } catch {}
+      // Fallbacks adicionales
+      if (creators.length === 0 && Array.isArray(show.people)) {
+        creators = show.people.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('creator')).map((p: any) => p.name)
+      } else if (creators.length === 0 && Array.isArray(show.seriesPeople)) {
+        creators = show.seriesPeople.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('creator')).map((p: any) => p.name)
+      } else if (creators.length === 0 && Array.isArray(show.createdBy)) {
+        creators = show.createdBy.map((c: any) => c.name || c)
+      }
+
+      // 4. Temporadas: llamada a /series/{id}/seasons
+      let seasons = 1
+      try {
+        const seasonsResp = await tvdbApi.get(`/series/${showId}/seasons`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        if (Array.isArray(seasonsResp.data.data)) {
+          seasons = seasonsResp.data.data.length
+        }
+      } catch {
+        // Fallbacks
+        if (Array.isArray(show.seasons)) {
+          seasons = show.seasons.length
+        } else if (show.seasonsCount) {
+          seasons = show.seasonsCount
+        }
+      }
+
       return {
         id: show.id,
         title: show.name,
@@ -117,6 +185,9 @@ export class TVDBService {
         overview: show.overview || 'Sin descripción disponible',
         status: show.status?.name || 'Estado desconocido',
         network: show.network?.name || 'Red no disponible',
+        genres,
+        creators,
+        seasons,
       }
     } catch (error) {
       console.error('Error al obtener detalles del show:', error)
