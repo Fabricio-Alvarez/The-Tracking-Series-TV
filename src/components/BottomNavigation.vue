@@ -1,9 +1,9 @@
 <template>
   <nav class="bottom-nav">
-    <router-link to="/" class="nav-item" active-class="active">
+    <a href="#" class="nav-item" :class="{ active: $route.path === '/' }" @click.prevent="clearSearchAndGoHome">
       <ion-icon name="compass-outline"></ion-icon>
       <span>Explorar</span>
-    </router-link>
+    </a>
 
     <router-link to="/search" class="nav-item" active-class="active">
       <ion-icon name="search-outline"></ion-icon>
@@ -28,7 +28,17 @@
 </template>
 
 <script setup lang="ts">
-// No necesitamos lógica adicional aquí
+import { useRouter } from 'vue-router'
+import { useShowsStore } from '@/stores/shows'
+
+const router = useRouter()
+const showsStore = useShowsStore()
+
+const clearSearchAndGoHome = () => {
+  showsStore.setSearchQuery('')
+  showsStore.setSearchResults([])
+  router.push('/')
+}
 </script>
 
 <style scoped>

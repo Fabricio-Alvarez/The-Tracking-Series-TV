@@ -1,118 +1,141 @@
 <template>
   <div class="explore-screen">
-    <div class="explore-header">
-      <h1>Explorar Series</h1>
-      <p>Descubre las mejores series de televisión</p>
+    <div v-if="searchQuery && searchResults.length > 0">
+      <h2>Resultados de búsqueda</h2>
+      <div class="shows-grid">
+        <MovieCard
+          v-for="movie in searchResults"
+          :key="movie.id"
+          :movie="movie"
+          :show-rating="true"
+          :show-year="true"
+        />
+      </div>
     </div>
-
-    <div class="explore-content">
-      <!-- Series Populares -->
-      <section class="section">
-        <h2>Series Populares</h2>
-        <div v-if="isLoadingPopular" class="loading-container">
-          <div class="loading-spinner"></div>
-          <p>Cargando series populares...</p>
-        </div>
-
-        <div v-else-if="popularError" class="error-container">
-          <p>{{ popularError }}</p>
-          <button @click="loadPopularShows" class="retry-button">Reintentar</button>
-        </div>
-
-        <div v-else-if="popularShows.length === 0" class="empty-state">
-          <p>No se encontraron series populares</p>
-        </div>
-
-        <div v-else class="shows-grid">
-          <MovieCard
-            v-for="movie in popularShows"
-            :key="movie.id"
-            :movie="movie"
-            :show-rating="true"
-            :show-year="true"
-          />
-        </div>
-      </section>
-
-      <!-- Series Recomendadas -->
-      <section class="section">
-        <h2>Series Recomendadas</h2>
-        <div v-if="isLoadingRecommended" class="loading-container">
-          <div class="loading-spinner"></div>
-          <p>Cargando series recomendadas...</p>
-        </div>
-
-        <div v-else-if="recommendedError" class="error-container">
-          <p>{{ recommendedError }}</p>
-          <button @click="loadRecommendedShows" class="retry-button">Reintentar</button>
-        </div>
-
-        <div v-else-if="recommendedShows.length === 0" class="empty-state">
-          <p>No se encontraron series recomendadas</p>
-        </div>
-
-        <div v-else class="shows-grid">
-          <MovieCard
-            v-for="movie in recommendedShows"
-            :key="movie.id"
-            :movie="movie"
-            :show-rating="true"
-            :show-year="true"
-          />
-        </div>
-      </section>
-    </div>
+    <template v-else>
+      <div class="explore-header">
+        <h1>Explorar Series</h1>
+        <p>Descubre las mejores series de televisión</p>
+      </div>
+      <div class="explore-content">
+        <!-- Series Populares -->
+        <section class="section">
+          <h2>Series Populares</h2>
+          <div v-if="isLoadingPopular" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Cargando series populares...</p>
+          </div>
+          <div v-else-if="popularError" class="error-container">
+            <p>{{ popularError }}</p>
+            <button @click="loadPopularShows" class="retry-button">Reintentar</button>
+          </div>
+          <div v-else-if="popularSeries.length === 0" class="empty-state">
+            <p>No se encontraron series populares</p>
+          </div>
+          <div v-else class="shows-grid">
+            <MovieCard
+              v-for="movie in popularSeries"
+              :key="movie.id"
+              :movie="movie"
+              :show-rating="true"
+              :show-year="true"
+            />
+          </div>
+        </section>
+        <!-- Series Recomendadas -->
+        <section class="section">
+          <h2>Series Recomendadas</h2>
+          <div v-if="isLoadingRecommended" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Cargando series recomendadas...</p>
+          </div>
+          <div v-else-if="recommendedError" class="error-container">
+            <p>{{ recommendedError }}</p>
+            <button @click="loadRecommendedShows" class="retry-button">Reintentar</button>
+          </div>
+          <div v-else-if="recommendedSeries.length === 0" class="empty-state">
+            <p>No se encontraron series recomendadas</p>
+          </div>
+          <div v-else class="shows-grid">
+            <MovieCard
+              v-for="movie in recommendedSeries"
+              :key="movie.id"
+              :movie="movie"
+              :show-rating="true"
+              :show-year="true"
+            />
+          </div>
+        </section>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import TVDBService, { type Movie } from '@/services/tvdbService'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
+import { batchSearchTheTVDBExact } from '@/services/tvdbService'
+import { useRoute } from 'vue-router'
 
-// Estado
-const popularShows = ref<Movie[]>([])
-const recommendedShows = ref<Movie[]>([])
+const showsStore = useShowsStore()
+const searchQuery = computed(() => showsStore.searchQuery)
+const searchResults = computed(() => showsStore.searchResults)
+
+const popularSeries = ref([])
+const recommendedSeries = ref([])
 const isLoadingPopular = ref(false)
 const isLoadingRecommended = ref(false)
 const popularError = ref('')
 const recommendedError = ref('')
 
-// Cargar series populares
 const loadPopularShows = async () => {
   isLoadingPopular.value = true
   popularError.value = ''
-
   try {
-    popularShows.value = await TVDBService.getPopularShows()
-  } catch (error: any) {
-    console.error('Error cargando series populares:', error)
-    popularError.value = error.response?.data?.message || 'Error al cargar series populares'
+    popularSeries.value = await batchSearchTheTVDBExact([
+      'Stranger Things', 'The Mandalorian', 'Peaky Blinders', 'The Crown',
+      'Dark', 'The Boys', 'Better Call Saul', 'The Witcher',
+      'Money Heist', 'Ozark', 'Westworld', 'The Office',
+    ])
+  } catch (error) {
+    popularError.value = 'Error al cargar series populares'
   } finally {
     isLoadingPopular.value = false
   }
 }
-
-// Cargar series recomendadas
 const loadRecommendedShows = async () => {
   isLoadingRecommended.value = true
   recommendedError.value = ''
-
   try {
-    recommendedShows.value = await TVDBService.getRecommendedShows()
-  } catch (error: any) {
-    console.error('Error cargando series recomendadas:', error)
-    recommendedError.value = error.response?.data?.message || 'Error al cargar series recomendadas'
+    recommendedSeries.value = await batchSearchTheTVDBExact([
+      'Fleabag', 'The Marvelous Mrs. Maisel', 'Chernobyl', 'Mindhunter',
+      'The Expanse', 'Succession', 'Barry', 'The Leftovers',
+      'Atlanta', 'The Good Place', 'Severance', 'Ted Lasso',
+    ])
+  } catch (error) {
+    recommendedError.value = 'Error al cargar series recomendadas'
   } finally {
     isLoadingRecommended.value = false
   }
 }
 
-// Cargar datos al montar el componente
+const route = useRoute()
+
 onMounted(() => {
   loadPopularShows()
   loadRecommendedShows()
 })
+
+watch(
+  () => route.fullPath,
+  (newPath) => {
+    if (newPath === '/') {
+      showsStore.setSearchQuery('')
+      showsStore.setSearchResults([])
+    }
+  }
+)
 </script>
 
 <style scoped>

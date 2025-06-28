@@ -2,7 +2,7 @@
   <header class="app-header">
     <div class="header-content">
       <div class="header-left">
-        <h1 class="app-title">TV Tracker</h1>
+        <h1 class="app-title" @click="clearSearchAndGoHome" style="cursor:pointer">TV Tracker</h1>
       </div>
 
       <div class="header-right">
@@ -10,14 +10,16 @@
           <div class="search-box">
             <ion-icon name="search-outline" class="search-icon"></ion-icon>
             <input
+              ref="searchInput"
               v-model="searchQuery"
-              @keyup.enter="handleSearch"
               type="text"
               placeholder="Buscar series..."
               class="search-input"
+              :disabled="isLoading"
             />
-            <button @click="handleSearch" class="search-button" :disabled="!searchQuery.trim()">
-              <ion-icon name="search-outline"></ion-icon>
+            <button @mousedown.prevent="performSearch" class="search-button" :disabled="!searchQuery.trim() || isLoading">
+              <span v-if="isLoading" class="loading-spinner"></span>
+              <ion-icon v-else name="search-outline"></ion-icon>
             </button>
           </div>
         </div>
@@ -27,27 +29,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
+import TVDBService from '@/services/tvdbService'
 
 const router = useRouter()
 const showsStore = useShowsStore()
+const searchQuery = computed({
+  get: () => showsStore.searchQuery,
+  set: (val: string) => showsStore.setSearchQuery(val)
+})
+const isLoading = ref(false)
+const error = ref('')
+let searchTimeout: ReturnType<typeof setTimeout> | null = null
+const searchInput = ref<HTMLInputElement | null>(null)
 
-const searchQuery = ref('')
-
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    // Guardar la query en el store
+const performSearch = async () => {
+  if (!searchQuery.value.trim()) return
+  isLoading.value = true
+  error.value = ''
+  try {
+    const results = await TVDBService.searchShows(searchQuery.value)
     showsStore.setSearchQuery(searchQuery.value)
-
-    // Navegar a la vista de búsqueda
-    router.push('/search')
-
-    // Limpiar el input
-    searchQuery.value = ''
+    showsStore.setSearchResults(results)
+  } catch (err) {
+    error.value = 'Error al buscar series.'
+    showsStore.setSearchResults([])
+  } finally {
+    isLoading.value = false
+    nextTick(() => {
+      searchInput.value?.focus()
+    })
   }
 }
+
+const clearSearchAndGoHome = () => {
+  searchQuery.value = ''
+  showsStore.setSearchResults([])
+  router.push('/')
+}
+
+watch(
+  () => searchQuery.value,
+  (newQuery) => {
+    if (searchTimeout) clearTimeout(searchTimeout)
+    if (!newQuery) {
+      showsStore.setSearchQuery('')
+      showsStore.setSearchResults([])
+      error.value = ''
+      isLoading.value = false
+      return
+    }
+    searchTimeout = setTimeout(() => {
+      performSearch()
+    }, 500)
+  }
+)
 </script>
 
 <style scoped>
@@ -195,5 +233,18 @@ const handleSearch = () => {
   .app-title {
     text-align: center;
   }
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

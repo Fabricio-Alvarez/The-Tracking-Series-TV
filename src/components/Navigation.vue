@@ -1,16 +1,16 @@
 <template>
   <nav class="navigation">
     <div class="nav-container">
-      <router-link to="/" class="nav-logo">
+      <router-link to="/" class="nav-logo" @click="clearSearchAndGoHome">
         <span class="logo-icon">📺</span>
         <span class="logo-text">SeriesTracker</span>
       </router-link>
 
       <div class="nav-links">
-        <router-link to="/" class="nav-link" active-class="active">
+        <a href="#" @click.prevent="clearSearchAndGoHome" class="nav-link" :class="{ active: $route.path === '/' }">
           <span class="nav-icon">🏠</span>
           <span class="nav-text">Inicio</span>
-        </router-link>
+        </a>
 
         <router-link to="/search" class="nav-link" active-class="active">
           <span class="nav-icon">🔍</span>
@@ -41,14 +41,22 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
 
+const router = useRouter()
 const showsStore = useShowsStore()
 
 // Contadores para los badges
 const watchlistCount = computed(() => showsStore.watchlist.length)
 const watchedCount = computed(() => showsStore.watched.length)
 const favoritesCount = computed(() => showsStore.favorites.length)
+
+const clearSearchAndGoHome = () => {
+  showsStore.setSearchQuery('')
+  showsStore.setSearchResults([])
+  router.push('/')
+}
 </script>
 
 <style scoped>
