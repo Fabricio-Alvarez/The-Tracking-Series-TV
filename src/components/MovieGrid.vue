@@ -94,14 +94,14 @@ defineEmits<{
 
 @media (min-width: 1024px) {
   .movie-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 20px;
   }
 }
 
 @media (min-width: 1440px) {
   .movie-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
   }
 
   .content-header {
@@ -111,7 +111,7 @@ defineEmits<{
 
 @media (min-width: 1800px) {
   .movie-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(7, 1fr);
   }
 }
 </style>

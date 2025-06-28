@@ -140,7 +140,8 @@ watch(
 
 <style scoped>
 .explore-screen {
-  max-width: 1200px;
+  /* max-width: 1200px; */
+  width: 100%;
   margin: 0 auto;
   padding: 20px;
   background-color: #121212;
@@ -236,8 +237,14 @@ watch(
 
 .shows-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .shows-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -266,7 +273,7 @@ watch(
   }
 
   .shows-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
 }

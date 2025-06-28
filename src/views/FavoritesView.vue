@@ -46,7 +46,8 @@ const hasFavorites = computed(() => showsStore.hasFavorites)
 
 <style scoped>
 .favorites-view {
-  max-width: 1200px;
+  /* max-width: 1200px; */
+  width: 100%;
   margin: 0 auto;
   padding: 20px;
   background-color: #121212;
@@ -141,8 +142,14 @@ const hasFavorites = computed(() => showsStore.hasFavorites)
 
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .favorites-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -167,7 +174,7 @@ const hasFavorites = computed(() => showsStore.hasFavorites)
   }
 
   .favorites-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
 }

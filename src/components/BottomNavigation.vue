@@ -5,11 +5,6 @@
       <span>Explorar</span>
     </a>
 
-    <router-link to="/search" class="nav-item" active-class="active">
-      <ion-icon name="search-outline"></ion-icon>
-      <span>Buscar</span>
-    </router-link>
-
     <router-link to="/watchlist" class="nav-item" active-class="active">
       <ion-icon name="tv-outline"></ion-icon>
       <span>Watchlist</span>
