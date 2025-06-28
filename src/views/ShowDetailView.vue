@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
 import type { Movie } from '@/services/tvdbService'
 
 const route = useRoute()
+const router = useRouter()
 const showsStore = useShowsStore()
 
 const showId = String(route.params.id)
@@ -286,6 +287,10 @@ const handleFavorites = async () => {
   }
 }
 
+function goToWatch() {
+  router.push({ name: 'show-watch', params: { id: showId } })
+}
+
 onMounted(async () => {
   if (!show.value) {
     loading.value = true
@@ -323,7 +328,7 @@ onMounted(async () => {
     </div>
     <p class="description">{{ show.overview }}</p>
     <p class="creators">Creadores: <span>{{ displayCreators.length > 0 ? displayCreators.join(', ') : 'No disponible' }}</span></p>
-    <button class="start-watching-btn" :disabled="isLoading">
+    <button class="start-watching-btn" :disabled="isLoading" @click="goToWatch">
       <ion-icon name="eye-outline" class="icon-main"></ion-icon>
       Start watching
     </button>

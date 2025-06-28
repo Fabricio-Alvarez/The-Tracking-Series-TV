@@ -234,4 +234,24 @@ export async function batchSearchTheTVDBExact(titles: string[]): Promise<Movie[]
   return results.filter((item): item is Movie => item !== null);
 }
 
+// --- MÉTODOS MOCK PARA VISTA WATCH ---
+export async function getSeriesPeopleMock(showId: string) {
+  // Puedes personalizar según showId si quieres
+  return [
+    { id: 1, name: 'Jenna Ortega', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064746.jpg' },
+    { id: 2, name: 'Hunter Doohan', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064747.jpg' },
+    { id: 3, name: 'Percy Hynes White', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064748.jpg' },
+    { id: 4, name: 'Emma Myers', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064749.jpg' },
+    { id: 5, name: 'Joy Sunday', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064750.jpg' },
+  ]
+}
+
+export async function getSeriesImagesMock(showId: string) {
+  return [
+    'https://static.tvmaze.com/uploads/images/original_untouched/425/1064741.jpg',
+    'https://static.tvmaze.com/uploads/images/original_untouched/425/1064742.jpg',
+    'https://static.tvmaze.com/uploads/images/original_untouched/425/1064743.jpg',
+  ]
+}
+
 export default TVDBService
