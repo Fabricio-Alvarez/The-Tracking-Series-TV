@@ -22,17 +22,32 @@ const isLoading = ref(true)
 
 const seriesWatchData: Record<string, any> = {
   'wednesday': {
-    cast: [
-      { name: 'Jenna Ortega', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064746.jpg' },
-      { name: 'Hunter Doohan', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064747.jpg' },
-      { name: 'Percy Hynes White', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064748.jpg' },
-      { name: 'Emma Myers', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064749.jpg' },
-      { name: 'Joy Sunday', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064750.jpg' },
+     cast: [
+      {
+        "name": "Jenna Ortega",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Jenna_Ortega_at_2022_MTV_Movie_%26_TV_Awards.png/800px-Jenna_Ortega_at_2022_MTV_Movie_%26_TV_Awards.png"
+      },
+      {
+        "name": "Hunter Doohan",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Hunter_Doohan_2022.png/800px-Hunter_Doohan_2022.png"
+      },
+      {
+        "name": "Percy Hynes White",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Percy_Hynes_White_2022.png/800px-Percy_Hynes_White_2022.png"
+      },
+      {
+        "name": "Emma Myers",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Emma_Myers_2022.png/800px-Emma_Myers_2022.png"
+      },
+      {
+        "name": "Joy Sunday",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Joy_Sunday_2022.png/800px-Joy_Sunday_2022.png"
+      }
     ],
     images: [
-      'https://static.tvmaze.com/uploads/images/original_untouched/425/1064741.jpg',
-      'https://static.tvmaze.com/uploads/images/original_untouched/425/1064742.jpg',
-      'https://static.tvmaze.com/uploads/images/original_untouched/425/1064743.jpg',
+      "https://upload.wikimedia.org/wikipedia/en/thumb/4/42/WednesdayNetflixPosterEnglish.jpg/1200px-WednesdayNetflixPosterEnglish.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Wednesday_Addams_Netflix.jpg/800px-Wednesday_Addams_Netflix.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Wednesday_-_Netflix_Series.png/800px-Wednesday_-_Netflix_Series.png"
     ],
     trailer: { image: 'https://static.tvmaze.com/uploads/images/original_untouched/425/1064741.jpg', url: 'https://www.youtube.com/watch?v=Q73UhUTs6y0' },
     nextEpisode: { date: 'November 23, 2022', code: 's01e08', name: 'A Murder of Woes' },
@@ -350,19 +365,22 @@ const seriesWatchData: Record<string, any> = {
   },
   'la casa de papel': {
     cast: [
-      { name: 'Úrsula Corberó', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Úrsula_Corberó_2019.jpg' },
-      { name: 'Álvaro Morte', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Álvaro_Morte_2019.jpg' },
-      { name: 'Itziar Ituño', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Itziar_Ituño_2019.jpg' },
-      { name: 'Pedro Alonso', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Pedro_Alonso_2019.jpg' },
-      { name: 'Miguel Herrán', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Miguel_Herrán_2019.jpg' },
+      { name: 'Úrsula Corberó', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/%C3%9Arsula_Corber%C3%B3-65339.jpg/800px-%C3%9Arsula_Corber%C3%B3-65339.jpg' },
+      { name: 'Álvaro Morte', image: 'https://media.a24.com/p/40fc4e3e3bdb1e612a948278ab94f300/adjuntos/296/imagenes/008/732/0008732336/netflix-profesorpng.png' },
+      { name: 'Itziar Ituño', image: 'https://img.asmedia.epimg.net/resizer/v2/IKCM3JOR7JJYDOMDH2WJXVMPV4.jpg?auth=5bb00179609f85520bced8f1769477073fd230a5cf7009b2bce9adc66598e28b&width=1200&height=675&smart=true' },
+      { name: 'Pedro Alonso', image: 'https://assets.dev-filo.dift.io/img/2021/12/02/berlin_sq.jpg' },
+      { name: 'Miguel Herrán', image: 'https://okdiario.com/img/2021/04/26/miguel-herran-655x368.jpg' },
     ],
     images: [
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Money_Heist_logo.png',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Money_Heist_S1.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Money_Heist_S2.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Money_Heist_S3.jpg',
+      'https://okdiario.com/img/2021/04/26/miguel-herran-655x368.jpg',
+      'https://cdn.culturagenial.com/es/imagenes/casa-papel-maqueta-fabrica-cke.jpg?class=article',
+      'https://cdn.culturagenial.com/es/imagenes/quinta-parte-volumen-dos-cke.jpg?class=article',
+      'https://cdn.culturagenial.com/es/imagenes/la-casa-papel-personajes-cke.jpg?class=article',
     ],
-    trailer: { image: 'https://i.ytimg.com/vi/htqXL94Rza4/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=htqXL94Rza4' },
+
+
+
+    trailer: { image: 'https://i.ytimg.com/vi/htqXL94Rza4/maxresdefault.jpg', url: 'https://youtu.be/a--TYEwTMUY' },
     nextEpisode: { date: 'December 3, 2021', code: 's05e10', name: 'A Family Tradition' },
     seasons: [
       { number: 5, watched: 10, total: 10 },
@@ -374,17 +392,17 @@ const seriesWatchData: Record<string, any> = {
   },
   'the office (us)': {
     cast: [
-      { name: 'Steve Carell', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Steve_Carell_2019.jpg' },
-      { name: 'Rainn Wilson', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Rainn_Wilson_2019.jpg' },
-      { name: 'John Krasinski', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/John_Krasinski_2019.jpg' },
-      { name: 'Jenna Fischer', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Jenna_Fischer_2019.jpg' },
-      { name: 'Mindy Kaling', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Mindy_Kaling_2019.jpg' },
+      { name: 'Steve Carell', image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/2024/10/steve-carell-as-michael-scott-in-the-office.jpg?q=70&fit=crop&w=1140&h=&dpr=1' },
+      { name: 'Rainn Wilson', image: 'https://spcdn.shortpixel.ai/spio/ret_img,q_cdnize,to_auto,s_webp:avif/www.cinemascomics.com/wp-content/uploads/2023/07/Rainn-Wilson-como-Dwight-Schrute-en-The-Office.jpg' },
+      { name: 'John Krasinski', image: 'https://www.media.hw-static.com/media/2015/12/john-krasinski-the-office-nbc-111815.jpg' },
+      { name: 'Jenna Fischer', image: 'https://ew.com/thmb/6BHl9ETAq9JkPMLFmRm-DU-RYMo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/jenna-fischer-the-office-072424-e23a997947d9405e85c2e59f6319e0b4.jpg' },
+      { name: 'Mindy Kaling', image: 'https://www.nbc.com/sites/nbcblog/files/styles/hero_image__large__computer__alt_1_5x/public/2022/08/mindy-kaling-interview2.jpg' },
     ],
     images: [
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/The_Office_US_logo.png',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/The_Office_US_S1.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/The_Office_US_S2.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/The_Office_US_S3.jpg',
+      'https://forbes.es/wp-content/uploads/2017/05/20155818449_1.jpg',
+      'https://fotografias.antena3.com/clipping/cmsimages01/2022/01/26/947E65EF-299D-4E06-8EF4-86F0A13196B4/97.jpg?crop=1228,691,x7,y0&width=1600&height=900&optimize=high&format=webply',
+      'https://www.sopitas.com/wp-content/uploads/2024/10/escenas-eliminadas-serie-the-office.jpg',
+      'https://www.sopitas.com/wp-content/uploads/2024/04/the-office-nueva-serie-greg-daniel-cast-detalles.jpeg?resize=1024,569',
     ],
     trailer: { image: 'https://i.ytimg.com/vi/LHOtME2DL4g/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=LHOtME2DL4g' },
     nextEpisode: { date: 'May 16, 2013', code: 's09e23', name: 'Finale' },
@@ -402,17 +420,17 @@ const seriesWatchData: Record<string, any> = {
   },
   'atlanta': {
     cast: [
-      { name: 'Donald Glover', image: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Donald_Glover_2019.jpg' },
-      { name: 'Brian Tyree Henry', image: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Brian_Tyree_Henry_2019.jpg' },
-      { name: 'LaKeith Stanfield', image: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/LaKeith_Stanfield_2019.jpg' },
-      { name: 'Zazie Beetz', image: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Zazie_Beetz_2019.jpg' },
+      { name: 'Donald Glover', image: 'https://ew.com/thmb/En-VOPAwwU4fZg61g40dWCaL7C8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/atl_pilot_0721_114d-2cd61e73fbb2404e8d66914cbdd9fa70.jpg' },
+      { name: 'Brian Tyree Henry', image: 'https://static-www.adweek.com/wp-content/uploads/files/news_article/head_5.jpg' },
+      { name: 'LaKeith Stanfield', image: 'https://assets.fxnetworks.com/cms-next/production/6a3b37da-be2f-4f4e-a3ed-01390ee5e7bb.jpg?imwidth=605' },
+      { name: 'Zazie Beetz', image: 'https://ew.com/thmb/hYdq1u0EskBh9q-rvZQXSHynACE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/atlanta-c7985f38516b4915ba4884a3ee73c41e.jpg' },
     ],
     images: [
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Atlanta_logo.png',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Atlanta_S1.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Atlanta_S2.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Atlanta_S3.jpg',
-      'https://upload.wikimedia.org/wikipedia/en/7/7e/Atlanta_S4.jpg',
+      'https://m.media-amazon.com/images/M/MV5BOGVlMWNkNGItNWRhZC00MDdmLWFmMjItODgwMzM4ZGIxYTUyXkEyXkFqcGc@._V1_QL75_UX492_.jpg',
+      'https://ew.com/thmb/Ru5Kdv_pRfDTSVvQ18di88fhuGQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/zazie-beetz-55b0f7485fba4f6a9ce4bd8e3a636c90.jpg',
+      'https://m.media-amazon.com/images/M/MV5BMjExNjYwMTQtNmI2Yy00MzhkLWFiOTMtNjMyN2RlMmNmMmNlXkEyXkFqcGc@._V1_QL75_UX492_.jpg',
+      'https://pics.filmaffinity.com/atlanta-656738701-large.jpg',
+      'https://pics.filmaffinity.com/atlanta-829338266-large.jpg',
     ],
     trailer: { image: 'https://i.ytimg.com/vi/Phc8U8uM1Yc/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=Phc8U8uM1Yc' },
     nextEpisode: { date: 'November 10, 2022', code: 's04e10', name: 'It Was All a Dream' },
@@ -438,14 +456,14 @@ async function fetchData() {
   console.log('Show title:', showTitle.value)
   console.log('Custom data key:', showTitle.value.toLowerCase())
   console.log('Custom data found:', customData.value)
-  
+
   if (customData.value) {
     cast.value = customData.value.cast
     images.value = customData.value.images
     trailers.value = [customData.value.trailer]
     nextEpisode.value = customData.value.nextEpisode
     seasons.value = customData.value.seasons
-    
+
     console.log('Loaded cast:', cast.value)
     console.log('Loaded images:', images.value)
   } else {
@@ -644,4 +662,4 @@ async function fetchData() {
   padding: 2rem;
   color: #aaa;
 }
-</style> 
+</style>
