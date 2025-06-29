@@ -18,11 +18,13 @@ export const useShowsStore = defineStore('shows', () => {
   const watchlist = ref<Movie[]>([])
   const watched = ref<Movie[]>([])
   const favorites = ref<Movie[]>([])
+  const watching = ref<Movie[]>([])
 
   // Computed properties
   const hasWatchlist = computed(() => watchlist.value.length > 0)
   const hasWatched = computed(() => watched.value.length > 0)
   const hasFavorites = computed(() => favorites.value.length > 0)
+  const hasWatching = computed(() => watching.value.length > 0)
   const isLoggedIn = computed(() => currentUser.value !== null)
 
   // Métodos para búsqueda
@@ -125,6 +127,11 @@ export const useShowsStore = defineStore('shows', () => {
       if (!watched.value.find((m) => m.id === movie.id)) {
         watched.value.push(movie)
         saveToLocalStorage('watched', watched.value)
+        // Remover de watching si está ahí
+        if (watching.value.find((m) => m.id === movie.id)) {
+          watching.value = watching.value.filter((m) => m.id !== movie.id)
+          saveToLocalStorage('watching', watching.value)
+        }
       }
       return
     }
@@ -133,6 +140,11 @@ export const useShowsStore = defineStore('shows', () => {
       await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'watched')
       if (!watched.value.find((m) => m.id === movie.id)) {
         watched.value.push(movie)
+        // Remover de watching si está ahí
+        if (watching.value.find((m) => m.id === movie.id)) {
+          watching.value = watching.value.filter((m) => m.id !== movie.id)
+          saveToLocalStorage('watching', watching.value)
+        }
       }
     } catch (error) {
       console.error('Error al agregar a watched:', error)
@@ -140,6 +152,11 @@ export const useShowsStore = defineStore('shows', () => {
       if (!watched.value.find((m) => m.id === movie.id)) {
         watched.value.push(movie)
         saveToLocalStorage('watched', watched.value)
+        // Remover de watching si está ahí
+        if (watching.value.find((m) => m.id === movie.id)) {
+          watching.value = watching.value.filter((m) => m.id !== movie.id)
+          saveToLocalStorage('watching', watching.value)
+        }
       }
     }
   }
@@ -216,16 +233,55 @@ export const useShowsStore = defineStore('shows', () => {
     return favorites.value.some((m) => String(m.id) === String(movieId))
   }
 
+  // Métodos para watching
+  async function addToWatching(movie: Movie) {
+    if (!currentUser.value) {
+      if (!watching.value.find((m) => m.id === movie.id)) {
+        watching.value.push(movie)
+        saveToLocalStorage('watching', watching.value)
+        // Remover de watched si está ahí
+        if (watched.value.find((m) => m.id === movie.id)) {
+          watched.value = watched.value.filter((m) => m.id !== movie.id)
+          saveToLocalStorage('watched', watched.value)
+        }
+      }
+      return
+    }
+    // Aquí podrías agregar lógica para Turso si lo deseas
+    if (!watching.value.find((m) => m.id === movie.id)) {
+      watching.value.push(movie)
+      saveToLocalStorage('watching', watching.value)
+      // Remover de watched si está ahí
+      if (watched.value.find((m) => m.id === movie.id)) {
+        watched.value = watched.value.filter((m) => m.id !== movie.id)
+        saveToLocalStorage('watched', watched.value)
+      }
+    }
+  }
+
+  async function removeFromWatching(movieId: string | number) {
+    if (!currentUser.value) {
+      watching.value = watching.value.filter((m) => String(m.id) !== String(movieId))
+      saveToLocalStorage('watching', watching.value)
+      return
+    }
+    // Aquí podrías agregar lógica para Turso si lo deseas
+    watching.value = watching.value.filter((m) => String(m.id) !== String(movieId))
+    saveToLocalStorage('watching', watching.value)
+  }
+
+  function isInWatching(movieId: string | number): boolean {
+    return watching.value.some((m) => String(m.id) === String(movieId))
+  }
+
   // Cargar shows del usuario
   async function loadUserShows() {
     if (!currentUser.value) return
-
     try {
-      // Por ahora usamos localStorage como fallback
-      // En el futuro esto cargaría desde Turso
       watchlist.value = loadFromLocalStorage('watchlist')
       watched.value = loadFromLocalStorage('watched')
       favorites.value = loadFromLocalStorage('favorites')
+      watching.value = loadFromLocalStorage('watching')
     } catch (error) {
       console.error('Error al cargar shows del usuario:', error)
     }
@@ -246,6 +302,7 @@ export const useShowsStore = defineStore('shows', () => {
     watchlist.value = loadFromLocalStorage('watchlist')
     watched.value = loadFromLocalStorage('watched')
     favorites.value = loadFromLocalStorage('favorites')
+    watching.value = loadFromLocalStorage('watching')
   }
 
   function getShowById(id: string) {
@@ -254,6 +311,7 @@ export const useShowsStore = defineStore('shows', () => {
       watchlist.value.find((m) => String(m.id) === String(id)) ||
       watched.value.find((m) => String(m.id) === String(id)) ||
       favorites.value.find((m) => String(m.id) === String(id)) ||
+      watching.value.find((m) => String(m.id) === String(id)) ||
       searchResults.value.find((m) => String(m.id) === String(id))
     )
   }
@@ -287,11 +345,13 @@ export const useShowsStore = defineStore('shows', () => {
     watchlist,
     watched,
     favorites,
+    watching,
 
     // Computed
     hasWatchlist,
     hasWatched,
     hasFavorites,
+    hasWatching,
     isLoggedIn,
 
     // Métodos de búsqueda
@@ -318,6 +378,11 @@ export const useShowsStore = defineStore('shows', () => {
     addToFavorites,
     removeFromFavorites,
     isInFavorites,
+
+    // Métodos de watching
+    addToWatching,
+    removeFromWatching,
+    isInWatching,
 
     // Persistencia
     initializeFromStorage,

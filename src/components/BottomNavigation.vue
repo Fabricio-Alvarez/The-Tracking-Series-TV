@@ -5,19 +5,19 @@
       <span>Explorar</span>
     </a>
 
-    <router-link to="/watchlist" class="nav-item" active-class="active">
-      <ion-icon name="tv-outline"></ion-icon>
-      <span>Watchlist</span>
+    <router-link to="/my-shows" class="nav-item" active-class="active">
+      <ion-icon name="play-outline"></ion-icon>
+      <span>My shows</span>
     </router-link>
 
-    <router-link to="/watched" class="nav-item" active-class="active">
-      <ion-icon name="checkmark-circle-outline"></ion-icon>
-      <span>Vistas</span>
+    <router-link to="/calendar" class="nav-item" active-class="active">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>Calendar</span>
     </router-link>
 
-    <router-link to="/favorites" class="nav-item" active-class="active">
-      <ion-icon name="heart-outline"></ion-icon>
-      <span>Favoritos</span>
+    <router-link to="/notifications" class="nav-item" active-class="active">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <span>Notifications</span>
     </router-link>
   </nav>
 </template>

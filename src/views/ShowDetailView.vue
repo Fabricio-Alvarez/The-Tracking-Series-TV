@@ -16,6 +16,7 @@ const notFound = ref(false)
 const isInWatchlist = computed(() => show.value && showsStore.isInWatchlist(show.value.id))
 const isInWatched = computed(() => show.value && showsStore.isInWatched(show.value.id))
 const isInFavorites = computed(() => show.value && showsStore.isInFavorites(show.value.id))
+const isInWatching = computed(() => show.value && showsStore.isInWatching(show.value.id))
 
 const isLoading = ref(false)
 
@@ -287,8 +288,19 @@ const handleFavorites = async () => {
   }
 }
 
-function goToWatch() {
-  router.push({ name: 'show-watch', params: { id: showId } })
+async function goToWatch() {
+  if (!show.value) return
+  
+  isLoading.value = true
+  try {
+    // Si no está en watching, agregarlo primero
+    if (!showsStore.isInWatching(show.value.id)) {
+      await showsStore.addToWatching(show.value)
+    }
+    router.push({ name: 'show-watch', params: { id: showId } })
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onMounted(async () => {
@@ -330,7 +342,7 @@ onMounted(async () => {
     <p class="creators">Creadores: <span>{{ displayCreators.length > 0 ? displayCreators.join(', ') : 'No disponible' }}</span></p>
     <button class="start-watching-btn" :disabled="isLoading" @click="goToWatch">
       <ion-icon name="eye-outline" class="icon-main"></ion-icon>
-      Start watching
+      {{ isInWatching ? 'Watching' : 'Start watching' }}
     </button>
     <div class="actions">
       <button :class="['action-btn', { active: isInWatchlist }]" @click="handleWatchlist" :disabled="isLoading">
