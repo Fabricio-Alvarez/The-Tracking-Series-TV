@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getSeriesPeopleMock, getSeriesImagesMock } from '@/services/tvdbService'
 import { useShowsStore } from '@/stores/shows'
 
 const route = useRoute()
+const router = useRouter()
 const showId = String(route.params.id)
 
 const cast = ref<any[]>([])
@@ -377,9 +378,6 @@ const seriesWatchData: Record<string, any> = {
       'https://cdn.culturagenial.com/es/imagenes/quinta-parte-volumen-dos-cke.jpg?class=article',
       'https://cdn.culturagenial.com/es/imagenes/la-casa-papel-personajes-cke.jpg?class=article',
     ],
-
-
-
     trailer: { image: 'https://i.ytimg.com/vi/htqXL94Rza4/maxresdefault.jpg', url: 'https://youtu.be/a--TYEwTMUY' },
     nextEpisode: { date: 'December 3, 2021', code: 's05e10', name: 'A Family Tradition' },
     seasons: [
@@ -441,6 +439,230 @@ const seriesWatchData: Record<string, any> = {
       { number: 1, watched: 10, total: 10 },
     ],
   },
+  'the good place': {
+    cast: [
+      { name: 'Kristen Bell', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Kristen_Bell_2014.jpg/800px-Kristen_Bell_2014.jpg' },
+      { name: 'William Jackson Harper', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/William_Jackson_Harper_2019.jpg/800px-William_Jackson_Harper_2019.jpg' },
+      { name: 'Jameela Jamil', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Jameela_Jamil_2019.jpg/800px-Jameela_Jamil_2019.jpg' },
+      { name: 'Manny Jacinto', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Manny_Jacinto_2019.jpg/800px-Manny_Jacinto_2019.jpg' },
+      { name: 'Ted Danson', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ted_Danson_2019.jpg/800px-Ted_Danson_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Good_Place_logo.png/800px-The_Good_Place_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Good_Place_S1.jpg/800px-The_Good_Place_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Good_Place_S2.jpg/800px-The_Good_Place_S2.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Good_Place_S3.jpg/800px-The_Good_Place_S3.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Good_Place_S4.jpg/800px-The_Good_Place_S4.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/RfBgT5djaQw/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=RfBgT5djaQw' },
+    nextEpisode: { date: 'January 30, 2020', code: 's04e13', name: 'Whenever You\'re Ready' },
+    seasons: [
+      { number: 4, watched: 13, total: 13 },
+      { number: 3, watched: 13, total: 13 },
+      { number: 2, watched: 13, total: 13 },
+      { number: 1, watched: 13, total: 13 },
+    ],
+  },
+  'severance': {
+    cast: [
+      { name: 'Adam Scott', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Adam_Scott_2014.jpg/800px-Adam_Scott_2014.jpg' },
+      { name: 'Britt Lower', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Britt_Lower_2019.jpg/800px-Britt_Lower_2019.jpg' },
+      { name: 'Patricia Arquette', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Patricia_Arquette_2019.jpg/800px-Patricia_Arquette_2019.jpg' },
+      { name: 'John Turturro', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/John_Turturro_2019.jpg/800px-John_Turturro_2019.jpg' },
+      { name: 'Christopher Walken', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Christopher_Walken_2019.jpg/800px-Christopher_Walken_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Severance_logo.png/800px-Severance_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Severance_S1.jpg/800px-Severance_S1.jpg',
+      'https://m.media-amazon.com/images/M/MV5BMGMwMGE1YzUtNjFhNy00NGQ3LWI2NzAtNzVkY2VjN2Y2MDNkXkEyXkFqcGc@._V1_QL75_UX1400_.jpg',
+      'https://m.media-amazon.com/images/M/MV5BZjRlZDIyNDMtYzE1Yy00MzQ3LTk2Y2ItMTM5MWQxODI2NGRiXkEyXkFqcGc@._V1_QL75_UX1400_.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/xEQP4VVuyrY/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=xEQP4VVuyrY' },
+    nextEpisode: { date: 'TBA', code: 's02e01', name: 'TBA' },
+    seasons: [
+      { number: 2, watched: 0, total: 10 },
+      { number: 1, watched: 9, total: 9 },
+    ],
+  },
+  'ted lasso': {
+    cast: [
+      { name: 'Jason Sudeikis', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Jason_Sudeikis_2014.jpg/800px-Jason_Sudeikis_2014.jpg' },
+      { name: 'Hannah Waddingham', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Hannah_Waddingham_2019.jpg/800px-Hannah_Waddingham_2019.jpg' },
+      { name: 'Brett Goldstein', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Brett_Goldstein_2019.jpg/800px-Brett_Goldstein_2019.jpg' },
+      { name: 'Brendan Hunt', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Brendan_Hunt_2019.jpg/800px-Brendan_Hunt_2019.jpg' },
+      { name: 'Nick Mohammed', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Nick_Mohammed_2019.jpg/800px-Nick_Mohammed_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Ted_Lasso_logo.png/800px-Ted_Lasso_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Ted_Lasso_S1.jpg/800px-Ted_Lasso_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Ted_Lasso_S2.jpg/800px-Ted_Lasso_S2.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Ted_Lasso_S3.jpg/800px-Ted_Lasso_S3.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/3u7EIiohs6U/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=3u7EIiohs6U' },
+    nextEpisode: { date: 'May 31, 2023', code: 's03e12', name: 'So Long, Farewell' },
+    seasons: [
+      { number: 3, watched: 12, total: 12 },
+      { number: 2, watched: 12, total: 12 },
+      { number: 1, watched: 10, total: 10 },
+    ],
+  },
+  'fleabag': {
+    cast: [
+      { name: 'Phoebe Waller-Bridge', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Phoebe_Waller-Bridge_2019.jpg/800px-Phoebe_Waller-Bridge_2019.jpg' },
+      { name: 'Sian Clifford', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Sian_Clifford_2019.jpg/800px-Sian_Clifford_2019.jpg' },
+      { name: 'Andrew Scott', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Andrew_Scott_2019.jpg/800px-Andrew_Scott_2019.jpg' },
+      { name: 'Olivia Colman', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Olivia_Colman_2014.jpg/800px-Olivia_Colman_2014.jpg' },
+      { name: 'Bill Paterson', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Bill_Paterson_2019.jpg/800px-Bill_Paterson_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Fleabag_logo.png/800px-Fleabag_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Fleabag_S1.jpg/800px-Fleabag_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Fleabag_S2.jpg/800px-Fleabag_S2.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/aXWG-kKD7aA/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=aXWG-kKD7aA' },
+    nextEpisode: { date: 'April 8, 2019', code: 's02e06', name: 'Episode 6' },
+    seasons: [
+      { number: 2, watched: 6, total: 6 },
+      { number: 1, watched: 6, total: 6 },
+    ],
+  },
+  'the marvelous mrs. maisel': {
+    cast: [
+      { name: 'Rachel Brosnahan', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Rachel_Brosnahan_2019.jpg/800px-Rachel_Brosnahan_2019.jpg' },
+      { name: 'Alex Borstein', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Alex_Borstein_2019.jpg/800px-Alex_Borstein_2019.jpg' },
+      { name: 'Michael Zegen', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Michael_Zegen_2019.jpg/800px-Michael_Zegen_2019.jpg' },
+      { name: 'Marin Hinkle', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Marin_Hinkle_2019.jpg/800px-Marin_Hinkle_2019.jpg' },
+      { name: 'Tony Shalhoub', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Tony_Shalhoub_2019.jpg/800px-Tony_Shalhoub_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Marvelous_Mrs._Maisel_logo.png/800px-The_Marvelous_Mrs._Maisel_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Marvelous_Mrs._Maisel_S1.jpg/800px-The_Marvelous_Mrs._Maisel_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Marvelous_Mrs._Maisel_S2.jpg/800px-The_Marvelous_Mrs._Maisel_S2.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Marvelous_Mrs._Maisel_S3.jpg/800px-The_Marvelous_Mrs._Maisel_S3.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Marvelous_Mrs._Maisel_S4.jpg/800px-The_Marvelous_Mrs._Maisel_S4.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/1nCqRmx3Dnw/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=1nCqRmx3Dnw' },
+    nextEpisode: { date: 'May 26, 2023', code: 's05e09', name: 'Four Minutes' },
+    seasons: [
+      { number: 5, watched: 9, total: 9 },
+      { number: 4, watched: 8, total: 8 },
+      { number: 3, watched: 8, total: 8 },
+      { number: 2, watched: 10, total: 10 },
+      { number: 1, watched: 8, total: 8 },
+    ],
+  },
+  'chernobyl': {
+    cast: [
+      { name: 'Jared Harris', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Jared_Harris_2019.jpg/800px-Jared_Harris_2019.jpg' },
+      { name: 'Stellan Skarsgård', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Stellan_Skarsgård_2019.jpg/800px-Stellan_Skarsgård_2019.jpg' },
+      { name: 'Emily Watson', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Emily_Watson_2019.jpg/800px-Emily_Watson_2019.jpg' },
+      { name: 'Paul Ritter', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Paul_Ritter_2019.jpg/800px-Paul_Ritter_2019.jpg' },
+      { name: 'Jessie Buckley', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Jessie_Buckley_2019.jpg/800px-Jessie_Buckley_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Chernobyl_logo.png/800px-Chernobyl_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Chernobyl_S1.jpg/800px-Chernobyl_S1.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/s9APLXM9Ei8/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=s9APLXM9Ei8' },
+    nextEpisode: { date: 'June 3, 2019', code: 's01e05', name: 'Vichnaya Pamyat' },
+    seasons: [
+      { number: 1, watched: 5, total: 5 },
+    ],
+  },
+  'mindhunter': {
+    cast: [
+      { name: 'Jonathan Groff', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Jonathan_Groff_2019.jpg/800px-Jonathan_Groff_2019.jpg' },
+      { name: 'Holt McCallany', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Holt_McCallany_2019.jpg/800px-Holt_McCallany_2019.jpg' },
+      { name: 'Anna Torv', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Anna_Torv_2019.jpg/800px-Anna_Torv_2019.jpg' },
+      { name: 'Cameron Britton', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Cameron_Britton_2019.jpg/800px-Cameron_Britton_2019.jpg' },
+      { name: 'Hannah Gross', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Hannah_Gross_2019.jpg/800px-Hannah_Gross_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Mindhunter_logo.png/800px-Mindhunter_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Mindhunter_S1.jpg/800px-Mindhunter_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Mindhunter_S2.jpg/800px-Mindhunter_S2.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/evd3Jc5TGlI/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=evd3Jc5TGlI' },
+    nextEpisode: { date: 'August 16, 2019', code: 's02e09', name: 'Episode 9' },
+    seasons: [
+      { number: 2, watched: 9, total: 9 },
+      { number: 1, watched: 10, total: 10 },
+    ],
+  },
+  'the expanse': {
+    cast: [
+      { name: 'Steven Strait', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Steven_Strait_2019.jpg/800px-Steven_Strait_2019.jpg' },
+      { name: 'Shohreh Aghdashloo', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Shohreh_Aghdashloo_2019.jpg/800px-Shohreh_Aghdashloo_2019.jpg' },
+      { name: 'Dominique Tipper', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Dominique_Tipper_2019.jpg/800px-Dominique_Tipper_2019.jpg' },
+      { name: 'Wes Chatham', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Wes_Chatham_2019.jpg/800px-Wes_Chatham_2019.jpg' },
+      { name: 'Cara Gee', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Cara_Gee_2019.jpg/800px-Cara_Gee_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_logo.png/800px-The_Expanse_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_S1.jpg/800px-The_Expanse_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_S2.jpg/800px-The_Expanse_S2.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_S3.jpg/800px-The_Expanse_S3.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_S4.jpg/800px-The_Expanse_S4.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_S5.jpg/800px-The_Expanse_S5.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Expanse_S6.jpg/800px-The_Expanse_S6.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/kQuTAPWJxNo/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=kQuTAPWJxNo' },
+    nextEpisode: { date: 'January 14, 2022', code: 's06e06', name: 'Babylon\'s Ashes' },
+    seasons: [
+      { number: 6, watched: 6, total: 6 },
+      { number: 5, watched: 10, total: 10 },
+      { number: 4, watched: 10, total: 10 },
+      { number: 3, watched: 13, total: 13 },
+      { number: 2, watched: 13, total: 13 },
+      { number: 1, watched: 10, total: 10 },
+    ],
+  },
+  'barry': {
+    cast: [
+      { name: 'Bill Hader', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Bill_Hader_2019.jpg/800px-Bill_Hader_2019.jpg' },
+      { name: 'Stephen Root', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Stephen_Root_2019.jpg/800px-Stephen_Root_2019.jpg' },
+      { name: 'Sarah Goldberg', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Sarah_Goldberg_2019.jpg/800px-Sarah_Goldberg_2019.jpg' },
+      { name: 'Glenn Fleshler', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Glenn_Fleshler_2019.jpg/800px-Glenn_Fleshler_2019.jpg' },
+      { name: 'Anthony Carrigan', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Anthony_Carrigan_2019.jpg/800px-Anthony_Carrigan_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Barry_logo.png/800px-Barry_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Barry_S1.jpg/800px-Barry_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Barry_S2.jpg/800px-Barry_S2.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Barry_S3.jpg/800px-Barry_S3.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Barry_S4.jpg/800px-Barry_S4.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/VeW1VObNL10/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=VeW1VObNL10' },
+    nextEpisode: { date: 'May 28, 2023', code: 's04e08', name: 'Wow' },
+    seasons: [
+      { number: 4, watched: 8, total: 8 },
+      { number: 3, watched: 8, total: 8 },
+      { number: 2, watched: 8, total: 8 },
+      { number: 1, watched: 8, total: 8 },
+    ],
+  },
+  'the leftovers': {
+    cast: [
+      { name: 'Justin Theroux', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Justin_Theroux_2019.jpg/800px-Justin_Theroux_2019.jpg' },
+      { name: 'Carrie Coon', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Carrie_Coon_2019.jpg/800px-Carrie_Coon_2019.jpg' },
+      { name: 'Amy Brenneman', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Amy_Brenneman_2019.jpg/800px-Amy_Brenneman_2019.jpg' },
+      { name: 'Christopher Eccleston', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Christopher_Eccleston_2019.jpg/800px-Christopher_Eccleston_2019.jpg' },
+      { name: 'Ann Dowd', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ann_Dowd_2019.jpg/800px-Ann_Dowd_2019.jpg' },
+    ],
+    images: [
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Leftovers_logo.png/800px-The_Leftovers_logo.png',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Leftovers_S1.jpg/800px-The_Leftovers_S1.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Leftovers_S2.jpg/800px-The_Leftovers_S2.jpg',
+      'https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Leftovers_S3.jpg/800px-The_Leftovers_S3.jpg',
+    ],
+    trailer: { image: 'https://i.ytimg.com/vi/0zZcBvqxODs/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=0zZcBvqxODs' },
+    nextEpisode: { date: 'June 4, 2017', code: 's03e08', name: 'The Book of Nora' },
+    seasons: [
+      { number: 3, watched: 8, total: 8 },
+      { number: 2, watched: 10, total: 10 },
+      { number: 1, watched: 10, total: 10 },
+    ],
+  },
   // ... Puedes agregar más series aquí siguiendo el mismo formato ...
 }
 
@@ -480,6 +702,10 @@ async function fetchData() {
     seasons.value = [{ number: 1, watched: 0, total: 10 }]
   }
   isLoading.value = false
+}
+
+function navigateToSeason(seasonNumber: number) {
+  router.push(`/show/${showId}/season/${seasonNumber}`)
 }
 </script>
 
@@ -526,7 +752,12 @@ async function fetchData() {
       <section class="section">
         <h3>Seasons</h3>
         <div class="seasons-list">
-          <div v-for="season in seasons" :key="season.number" class="season-item">
+          <div 
+            v-for="season in seasons" 
+            :key="season.number" 
+            class="season-item"
+            @click="navigateToSeason(season.number)"
+          >
             <input type="checkbox" :checked="season.watched === season.total" disabled />
             <span>Season {{ season.number }}</span>
             <div class="season-progress">
@@ -643,6 +874,12 @@ async function fetchData() {
   background: #23243a;
   border-radius: 8px;
   padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.season-item:hover {
+  background: #2a2d35;
 }
 .season-progress {
   flex: 1;
