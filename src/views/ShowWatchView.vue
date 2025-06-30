@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getSeriesPeopleMock, getSeriesImagesMock } from '@/services/tvdbService'
 import { useShowsStore } from '@/stores/shows'
@@ -671,6 +671,66 @@ const customData = computed(() => {
   return seriesWatchData[key] || null
 })
 
+// --- NUEVO: Progreso real de episodios vistos por temporada ---
+function getSeasonWatchedCount(seasonNumber: number): number {
+  const storageKey = `episodes_${showId}_season_${seasonNumber}`
+  try {
+    const watchedEpisodes = JSON.parse(localStorage.getItem(storageKey) || '[]')
+    return Array.isArray(watchedEpisodes) ? watchedEpisodes.length : 0
+  } catch {
+    return 0
+  }
+}
+
+function isSeasonFullyWatched(season: any): boolean {
+  return getSeasonWatchedCount(season.number) === season.total
+}
+
+function toggleSeasonWatched(season: any) {
+  const storageKey = `episodes_${showId}_season_${season.number}`
+  if (isSeasonFullyWatched(season)) {
+    // Desmarcar todos los episodios
+    localStorage.setItem(storageKey, JSON.stringify([]))
+    // Actualizar lastWatched a la temporada actual, episodio 1 (o 0)
+    saveLastWatched(season.number, 1)
+  } else {
+    // Marcar todos los episodios
+    const all = Array.from({ length: season.total }, (_, i) => i + 1)
+    localStorage.setItem(storageKey, JSON.stringify(all))
+    // Actualizar lastWatched a la temporada actual, último episodio
+    saveLastWatched(season.number, season.total)
+  }
+  // Forzar actualización reactiva
+  updateSeasonsProgress()
+}
+
+function saveLastWatched(season: number, episode: number) {
+  const key = `lastWatched_${showId}`
+  const data = { season, episode, timestamp: Date.now() }
+  localStorage.setItem(key, JSON.stringify(data))
+}
+
+function updateSeasonsProgress() {
+  if (!seasons.value) return
+  seasons.value = seasons.value.map((season: any) => ({
+    ...season,
+    watched: getSeasonWatchedCount(season.number)
+  }))
+}
+
+// Actualizar progreso al montar y cuando cambie showId
+onMounted(() => {
+  fetchData()
+  watch(
+    () => showId,
+    () => {
+      fetchData()
+      updateSeasonsProgress()
+    }
+  )
+  updateSeasonsProgress()
+})
+
 onMounted(fetchData)
 
 async function fetchData() {
@@ -752,18 +812,22 @@ function navigateToSeason(seasonNumber: number) {
       <section class="section">
         <h3>Seasons</h3>
         <div class="seasons-list">
-          <div 
-            v-for="season in seasons" 
-            :key="season.number" 
+          <div
+            v-for="season in seasons"
+            :key="season.number"
             class="season-item"
             @click="navigateToSeason(season.number)"
           >
-            <input type="checkbox" :checked="season.watched === season.total" disabled />
+            <input type="checkbox"
+              :checked="isSeasonFullyWatched(season)"
+              @click.stop="toggleSeasonWatched(season)"
+              @change.prevent
+            />
             <span>Season {{ season.number }}</span>
             <div class="season-progress">
-              <div class="season-bar" :style="{ width: (season.watched/season.total*100)+'%' }"></div>
+              <div class="season-bar" :style="{ width: (getSeasonWatchedCount(season.number)/season.total*100)+'%' }"></div>
             </div>
-            <span>{{ season.watched }}/{{ season.total }}</span>
+            <span>{{ getSeasonWatchedCount(season.number) }}/{{ season.total }}</span>
             <ion-icon name="chevron-forward-outline" />
           </div>
         </div>

@@ -1907,8 +1907,13 @@ function saveWatchedState() {
   const watchedEpisodes = episodes.value
     .filter(episode => episode.watched)
     .map(episode => episode.id)
-  
   localStorage.setItem(storageKey, JSON.stringify(watchedEpisodes))
+}
+
+function saveLastWatched(season: number, episode: number) {
+  const key = `lastWatched_${showId}`
+  const data = { season, episode, timestamp: Date.now() }
+  localStorage.setItem(key, JSON.stringify(data))
 }
 
 function toggleWatched(episodeId: number) {
@@ -1917,6 +1922,8 @@ function toggleWatched(episodeId: number) {
     episode.watched = !episode.watched
     // Guardar estado inmediatamente después de cambiar
     saveWatchedState()
+    // Guardar el último episodio marcado/desmarcado
+    saveLastWatched(seasonNumber, episodeId)
   }
 }
 

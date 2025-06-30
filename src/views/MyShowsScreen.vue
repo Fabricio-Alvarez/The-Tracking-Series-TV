@@ -61,13 +61,27 @@
       <div class="watching-list">
         <template v-if="watching.length > 0">
           <div class="watching-grid">
-            <MovieCard
-              v-for="movie in watching"
-              :key="movie.id"
-              :movie="movie"
-              :show-rating="true"
-              :show-year="true"
-            />
+            <div v-for="movie in watching" :key="movie.id" class="watching-progress-card">
+              <MovieCard
+                :movie="movie"
+                :show-rating="true"
+                :show-year="true"
+              />
+              <div class="progress-info-bar">
+                <div class="progress-labels">
+                  <span class="progress-label progress-label-code">{{ getLastWatchedEpisodeCode(movie) }}</span>
+                  <span class="progress-label progress-label-ep">{{ getSeasonProgress(movie).watched }}/{{ getSeasonProgress(movie).total }}</span>
+                  <span class="progress-label progress-label-left">{{ getSeasonProgress(movie).left }} left</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-bar-fill" :style="{ width: (getSeasonProgress(movie).total > 0 ? (getSeasonProgress(movie).watched / getSeasonProgress(movie).total * 100) : 0) + '%' }"></div>
+                </div>
+              </div>
+              <div class="watching-actions">
+                <button class="watched-btn" @click="markAsWatched(movie)">Watched</button>
+                <button class="summary-btn" @click="goToSummary(movie)">Summary</button>
+              </div>
+            </div>
           </div>
         </template>
         <template v-else>
@@ -108,6 +122,87 @@ function goTo(type: string) {
 function handleImageError(event: Event) {
   const img = event.target as HTMLImageElement
   img.src = 'https://via.placeholder.com/80x120/333/fff?text=No+Image'
+}
+
+
+interface ProgressInfo {
+  watched: number
+  total: number
+  left: number
+  season: number
+}
+
+const seriesWatchData: Record<string, any> = {
+  'wednesday': { seasons: [{ number: 1, total: 8 }] },
+  'stranger things': { seasons: [ { number: 4, total: 9 }, { number: 3, total: 8 }, { number: 2, total: 9 }, { number: 1, total: 8 } ] },
+  'peaky blinders': { seasons: [ { number: 6, total: 6 }, { number: 5, total: 6 }, { number: 4, total: 6 }, { number: 3, total: 6 }, { number: 2, total: 6 }, { number: 1, total: 6 } ] },
+  'the mandalorian': { seasons: [ { number: 3, total: 8 }, { number: 2, total: 8 }, { number: 1, total: 8 } ] },
+  'the crown': { seasons: [ { number: 6, total: 10 }, { number: 5, total: 10 }, { number: 4, total: 10 }, { number: 3, total: 10 }, { number: 2, total: 10 }, { number: 1, total: 10 } ] },
+  'dark': { seasons: [ { number: 3, total: 8 }, { number: 2, total: 8 }, { number: 1, total: 10 } ] },
+  'the boys': { seasons: [ { number: 4, total: 8 }, { number: 3, total: 8 }, { number: 2, total: 8 }, { number: 1, total: 8 } ] },
+  'la casa de papel': { seasons: [ { number: 5, total: 10 }, { number: 4, total: 8 }, { number: 3, total: 8 }, { number: 2, total: 9 }, { number: 1, total: 13 } ] },
+}
+
+function getSeasonProgress(movie: any): ProgressInfo {
+  // Buscar la última temporada marcada por el usuario
+  const lastWatchedKey = `lastWatched_${movie.id}`
+  let lastWatched = { season: 1, episode: 1 }
+  try {
+    const data = JSON.parse(localStorage.getItem(lastWatchedKey) || '{}')
+    if (data && data.season) {
+      lastWatched = data
+    }
+  } catch {}
+  const season = lastWatched.season || 1
+  // Buscar en localStorage el progreso de episodios vistos para esa temporada
+  const storageKey = `episodes_${movie.id}_season_${season}`
+  let watchedEpisodes: number[] = []
+  try {
+    watchedEpisodes = JSON.parse(localStorage.getItem(storageKey) || '[]')
+  } catch {
+    watchedEpisodes = []
+  }
+  // Obtener el total de episodios de la temporada de forma robusta
+  let total = 10
+  let seasonsArr = movie.seasons
+  // Si no existe en el objeto, buscar en el mock
+  if (!seasonsArr) {
+    const key = (movie.title || '').toLowerCase().trim()
+    if (seriesWatchData[key]) {
+      seasonsArr = seriesWatchData[key].seasons
+    }
+  }
+  if (seasonsArr && seasonsArr[season - 1]) {
+    if (Array.isArray(seasonsArr[season - 1].episodes)) {
+      total = seasonsArr[season - 1].episodes.length
+    } else if (typeof seasonsArr[season - 1].total === 'number') {
+      total = seasonsArr[season - 1].total
+    }
+  }
+  const watched = watchedEpisodes.length
+  const left = total - watched
+  return { watched, total, left, season }
+}
+
+function getLastWatchedEpisodeCode(movie: any): string {
+  const lastWatchedKey = `lastWatched_${movie.id}`
+  let lastWatched = { season: 1, episode: 1 }
+  try {
+    const data = JSON.parse(localStorage.getItem(lastWatchedKey) || '{}')
+    if (data && data.season) {
+      lastWatched = data
+    }
+  } catch {}
+
+  return `s${String(lastWatched.season).padStart(2, '0')}e${String(lastWatched.episode).padStart(2, '0')}`
+}
+
+function markAsWatched(movie: any) {
+  showsStore.addToWatched(movie)
+}
+
+function goToSummary(movie: any) {
+  router.push({ name: 'show-detail', params: { id: String(movie.id) } })
 }
 </script>
 
@@ -215,6 +310,107 @@ function handleImageError(event: Event) {
   font-size: 16px;
   text-align: center;
   padding: 30px 0 10px 0;
+}
+.watching-progress-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #181818;
+  border-radius: 12px;
+  padding: 10px 0 0 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  height: 100%;
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: space-between;
+}
+.progress-info-bar {
+  margin-top: 4px;
+}
+.progress-labels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 2px;
+}
+.progress-label {
+  background: #23243a;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-weight: 500;
+}
+.progress-label-ep {
+  color: #6c7ae0;
+  background: #23243a;
+}
+.progress-label-left {
+  color: #aaa;
+  background: transparent;
+}
+.progress-label-code {
+  background: #23243a;
+  color: #fff;
+  font-family: monospace;
+  font-size: 15px;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.progress-bar {
+  width: 100%;
+  height: 7px;
+  background: #23243a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6c7ae0, #007bff);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+.watching-actions {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+.watched-btn, .summary-btn {
+  flex: 1 1 0;
+  margin: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-sizing: border-box;
+}
+.watched-btn {
+  background: #6c7ae0;
+  color: #fff;
+  border: none;
+  border-bottom-left-radius: 12px;
+}
+.watched-btn:hover {
+  background: #4e5bbd;
+}
+.summary-btn {
+  background: #23243a;
+  color: #fff;
+  border: none;
+  border-bottom-right-radius: 12px;
+}
+.summary-btn:hover {
+  background: #33344a;
 }
 @media (max-width: 900px) {
   .myshows-cards {
