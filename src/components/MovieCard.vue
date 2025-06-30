@@ -143,6 +143,7 @@ function handleCardClick(event: MouseEvent) {
 .movie-item {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .movie-card {
@@ -152,6 +153,7 @@ function handleCardClick(event: MouseEvent) {
   aspect-ratio: 2/3;
   transition: transform 0.3s ease;
   cursor: pointer;
+  width: 100%;
 }
 
 .movie-card:hover {
@@ -164,6 +166,7 @@ function handleCardClick(event: MouseEvent) {
   height: 100%;
   object-fit: cover;
   background: #333;
+  flex: 1 1 auto;
 }
 
 .movie-rating {
@@ -243,6 +246,7 @@ function handleCardClick(event: MouseEvent) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .movie-year {

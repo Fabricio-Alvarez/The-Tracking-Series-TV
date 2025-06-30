@@ -37,10 +37,23 @@
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 const showsStore = useShowsStore()
 
-const watched = computed(() => showsStore.watched)
+onBeforeRouteLeave(() => {
+  showsStore.setSearchQuery('')
+})
+
+const watched = computed(() => {
+  if (!showsStore.searchQuery) {
+    return showsStore.watched
+  }
+  return showsStore.watched.filter(movie =>
+    movie.title.toLowerCase().includes(showsStore.searchQuery.toLowerCase())
+  )
+})
+
 const hasWatched = computed(() => showsStore.hasWatched)
 </script>
 
@@ -148,7 +161,7 @@ const hasWatched = computed(() => showsStore.hasWatched)
 
 @media (min-width: 1024px) {
   .watched-grid {
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 

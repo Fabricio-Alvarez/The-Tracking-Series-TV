@@ -37,10 +37,23 @@
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 const showsStore = useShowsStore()
 
-const watchlist = computed(() => showsStore.watchlist)
+onBeforeRouteLeave(() => {
+  showsStore.setSearchQuery('')
+})
+
+const watchlist = computed(() => {
+  if (!showsStore.searchQuery) {
+    return showsStore.watchlist
+  }
+  return showsStore.watchlist.filter(movie =>
+    movie.title.toLowerCase().includes(showsStore.searchQuery.toLowerCase())
+  )
+})
+
 const hasWatchlist = computed(() => showsStore.hasWatchlist)
 </script>
 
@@ -148,7 +161,7 @@ const hasWatchlist = computed(() => showsStore.hasWatchlist)
 
 @media (min-width: 1024px) {
   .watchlist-grid {
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 

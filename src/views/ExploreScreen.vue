@@ -1,8 +1,14 @@
 <template>
   <div class="explore-screen">
-    <div v-if="searchQuery && searchResults.length > 0">
-      <h2>Resultados de búsqueda</h2>
-      <div class="shows-grid">
+    <div class="explore-header">
+      <h1 v-if="searchQuery && searchResults.length > 0">Resultados de búsqueda</h1>
+      <template v-else>
+        <h1>Explorar Series</h1>
+        <p>Descubre las mejores series de televisión</p>
+      </template>
+    </div>
+    <div class="explore-content">
+      <div v-if="searchQuery && searchResults.length > 0" class="shows-grid">
         <MovieCard
           v-for="movie in searchResults"
           :key="movie.id as string"
@@ -11,13 +17,7 @@
           :show-year="true"
         />
       </div>
-    </div>
-    <template v-else>
-      <div class="explore-header">
-        <h1>Explorar Series</h1>
-        <p>Descubre las mejores series de televisión</p>
-      </div>
-      <div class="explore-content">
+      <template v-else>
         <!-- Series Populares -->
         <section class="section">
           <h2>Series Populares</h2>
@@ -66,8 +66,8 @@
             />
           </div>
         </section>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -240,13 +240,20 @@ watch(
 
 .shows-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .shows-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
 }
 
 @media (min-width: 1024px) {
   .shows-grid {
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 

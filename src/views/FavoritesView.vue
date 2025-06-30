@@ -37,10 +37,23 @@
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 const showsStore = useShowsStore()
 
-const favorites = computed(() => showsStore.favorites)
+onBeforeRouteLeave(() => {
+  showsStore.setSearchQuery('')
+})
+
+const favorites = computed(() => {
+  if (!showsStore.searchQuery) {
+    return showsStore.favorites
+  }
+  return showsStore.favorites.filter(movie =>
+    movie.title.toLowerCase().includes(showsStore.searchQuery.toLowerCase())
+  )
+})
+
 const hasFavorites = computed(() => showsStore.hasFavorites)
 </script>
 
@@ -148,7 +161,7 @@ const hasFavorites = computed(() => showsStore.hasFavorites)
 
 @media (min-width: 1024px) {
   .favorites-grid {
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 

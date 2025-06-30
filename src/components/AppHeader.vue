@@ -8,7 +8,10 @@
       <div class="header-right">
         <div class="search-container">
           <div class="search-box">
-            <ion-icon name="search-outline" class="search-icon"></ion-icon>
+            <button @click="performSearch" class="search-icon-button" :disabled="!searchQuery.trim() || isLoading">
+              <span v-if="isLoading" class="loading-spinner"></span>
+              <ion-icon v-else name="search-outline" class="search-icon"></ion-icon>
+            </button>
             <input
               ref="searchInput"
               v-model="searchQuery"
@@ -16,10 +19,10 @@
               placeholder="Buscar series..."
               class="search-input"
               :disabled="isLoading"
+              @keyup.enter="performSearch"
             />
-            <button @mousedown.prevent="performSearch" class="search-button" :disabled="!searchQuery.trim() || isLoading">
-              <span v-if="isLoading" class="loading-spinner"></span>
-              <ion-icon v-else name="search-outline"></ion-icon>
+            <button class="contact-button">
+              <ion-icon name="person-outline"></ion-icon>
             </button>
           </div>
         </div>
@@ -73,17 +76,11 @@ const clearSearchAndGoHome = () => {
 watch(
   () => searchQuery.value,
   (newQuery) => {
-    if (searchTimeout) clearTimeout(searchTimeout)
     if (!newQuery) {
-      showsStore.setSearchQuery('')
       showsStore.setSearchResults([])
       error.value = ''
       isLoading.value = false
-      return
     }
-    searchTimeout = setTimeout(() => {
-      performSearch()
-    }, 500)
   }
 )
 </script>
@@ -140,17 +137,32 @@ watch(
   box-shadow: 0 0 0 2px #6c7ae0;
 }
 
+.search-icon-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0 4px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+.search-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 .search-icon {
   font-size: 18px;
-  color: #888;
-  margin-left: 12px;
 }
 
 .search-input {
   flex: 1;
   background: transparent;
   border: none;
-  color: #fff;
+  color: #888;
   font-size: 14px;
   outline: none;
   padding: 8px 12px;
@@ -160,7 +172,7 @@ watch(
   color: #888;
 }
 
-.search-button {
+.contact-button {
   background: #6c7ae0;
   color: white;
   border: none;
@@ -175,16 +187,11 @@ watch(
   margin-right: 4px;
 }
 
-.search-button:hover:not(:disabled) {
+.contact-button:hover {
   background: #5a6bc8;
 }
 
-.search-button:disabled {
-  background: #555;
-  cursor: not-allowed;
-}
-
-.search-button ion-icon {
+.contact-button ion-icon {
   font-size: 16px;
 }
 
@@ -215,7 +222,7 @@ watch(
     height: 32px;
   }
 
-  .search-button ion-icon {
+  .contact-button ion-icon {
     font-size: 14px;
   }
 }
@@ -239,7 +246,7 @@ watch(
   width: 16px;
   height: 16px;
   border: 2px solid transparent;
-  border-top: 2px solid white;
+  border-top: 2px solid #888;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
