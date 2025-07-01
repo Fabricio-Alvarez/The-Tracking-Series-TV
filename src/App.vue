@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useShowsStore } from '@/stores/shows'
-import AppHeader from '@/components/AppHeader.vue'
 import BottomNavigation from '@/components/BottomNavigation.vue'
 
 const showsStore = useShowsStore()
@@ -17,7 +16,6 @@ onMounted(async () => {
 
 <template>
   <div id="app">
-    <AppHeader />
     <main class="main-content">
       <router-view />
     </main>
@@ -36,7 +34,7 @@ onMounted(async () => {
     sans-serif;
   background-color: #121212;
   color: #fff;
-  min-height: 100vh;
+  min-height: calc(100vh - 80px); /* Restar altura del header */
   display: flex;
   flex-direction: column;
 }
@@ -49,13 +47,6 @@ onMounted(async () => {
 /* Estilos globales */
 * {
   box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #121212;
-  color: #fff;
 }
 
 /* Scrollbar personalizada */

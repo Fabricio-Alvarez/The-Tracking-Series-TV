@@ -45,7 +45,6 @@ const searchQuery = computed({
 })
 const isLoading = ref(false)
 const error = ref('')
-let searchTimeout: ReturnType<typeof setTimeout> | null = null
 const searchInput = ref<HTMLInputElement | null>(null)
 
 const performSearch = async () => {
@@ -73,6 +72,7 @@ const clearSearchAndGoHome = () => {
   router.push('/')
 }
 
+// Watch para limpiar resultados cuando se borra la búsqueda
 watch(
   () => searchQuery.value,
   (newQuery) => {
