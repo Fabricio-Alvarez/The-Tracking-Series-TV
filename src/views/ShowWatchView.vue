@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getSeriesPeopleMock, getSeriesImagesMock, TVDBService } from '@/services/tvdbService'
+import { getSeriesPeopleMock, getSeriesImagesMock, TVDBService, RealDataService } from '@/services/tvdbService'
 import { useShowsStore } from '@/stores/shows'
 
 const route = useRoute()
@@ -36,18 +36,24 @@ async function loadRealWatchData() {
       }))
     }
     
-    // Intentar obtener cast real de la API
+    // Obtener cast real con imágenes
     try {
-      const peopleResponse = await TVDBService.getShowDetails(showId)
-      if (peopleResponse?.creators) {
-        // Usar creadores como cast si no hay cast específico
-        cast.value = peopleResponse.creators.slice(0, 5).map((creator, index) => ({
-          name: creator,
-          image: `https://via.placeholder.com/150x200/333/fff?text=${creator.charAt(0)}`
-        }))
+      const realCast = await RealDataService.getRealCast(showId, showTitle.value)
+      if (realCast.length > 0) {
+        cast.value = realCast
       }
     } catch (error) {
       console.log('No se pudo obtener cast de la API')
+    }
+    
+    // Obtener imágenes reales de la serie
+    try {
+      const realImages = await RealDataService.getRealImages(showId, showTitle.value)
+      if (realImages.length > 0) {
+        images.value = realImages
+      }
+    } catch (error) {
+      console.log('No se pudieron obtener imágenes de la API')
     }
     
   } catch (error) {
@@ -420,35 +426,7 @@ const seriesWatchData: Record<string, any> = {
       { number: 3, watched: 8, total: 8 },
       { number: 2, watched: 9, total: 9 },
       { number: 1, watched: 13, total: 13 },
-    ],
-  },
-  'the office (us)': {
-    cast: [
-      { name: 'Steve Carell', image: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/2024/10/steve-carell-as-michael-scott-in-the-office.jpg?q=70&fit=crop&w=1140&h=&dpr=1' },
-      { name: 'Rainn Wilson', image: 'https://spcdn.shortpixel.ai/spio/ret_img,q_cdnize,to_auto,s_webp:avif/www.cinemascomics.com/wp-content/uploads/2023/07/Rainn-Wilson-como-Dwight-Schrute-en-The-Office.jpg' },
-      { name: 'John Krasinski', image: 'https://www.media.hw-static.com/media/2015/12/john-krasinski-the-office-nbc-111815.jpg' },
-      { name: 'Jenna Fischer', image: 'https://ew.com/thmb/6BHl9ETAq9JkPMLFmRm-DU-RYMo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/jenna-fischer-the-office-072424-e23a997947d9405e85c2e59f6319e0b4.jpg' },
-      { name: 'Mindy Kaling', image: 'https://www.nbc.com/sites/nbcblog/files/styles/hero_image__large__computer__alt_1_5x/public/2022/08/mindy-kaling-interview2.jpg' },
-    ],
-    images: [
-      'https://forbes.es/wp-content/uploads/2017/05/20155818449_1.jpg',
-      'https://fotografias.antena3.com/clipping/cmsimages01/2022/01/26/947E65EF-299D-4E06-8EF4-86F0A13196B4/97.jpg?crop=1228,691,x7,y0&width=1600&height=900&optimize=high&format=webply',
-      'https://www.sopitas.com/wp-content/uploads/2024/10/escenas-eliminadas-serie-the-office.jpg',
-      'https://www.sopitas.com/wp-content/uploads/2024/04/the-office-nueva-serie-greg-daniel-cast-detalles.jpeg?resize=1024,569',
-    ],
-    trailer: { image: 'https://i.ytimg.com/vi/LHOtME2DL4g/maxresdefault.jpg', url: 'https://www.youtube.com/watch?v=LHOtME2DL4g' },
-    nextEpisode: { date: 'May 16, 2013', code: 's09e23', name: 'Finale' },
-    seasons: [
-      { number: 9, watched: 25, total: 25 },
-      { number: 8, watched: 24, total: 24 },
-      { number: 7, watched: 26, total: 26 },
-      { number: 6, watched: 26, total: 26 },
-      { number: 5, watched: 28, total: 28 },
-      { number: 4, watched: 19, total: 19 },
-      { number: 3, watched: 25, total: 25 },
-      { number: 2, watched: 22, total: 22 },
-      { number: 1, watched: 6, total: 6 },
-    ],
+          ],
   },
   'atlanta': {
     cast: [
@@ -764,8 +742,6 @@ onMounted(() => {
   )
   updateSeasonsProgress()
 })
-
-onMounted(fetchData)
 
 async function fetchData() {
   isLoading.value = true
