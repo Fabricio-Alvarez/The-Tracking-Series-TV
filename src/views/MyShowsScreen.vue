@@ -1,4 +1,14 @@
 <template>
+  <div class="myshows-topbar">
+    <div :class="['topbar-tab', selectedTab === 'series' ? 'active' : '']" @click="selectedTab = 'series'">
+      <ion-icon name="tv-outline"></ion-icon>
+      <span>TV Series</span>
+    </div>
+    <div :class="['topbar-tab', selectedTab === 'movies' ? 'active' : '']" @click="selectedTab = 'movies'">
+      <ion-icon name="film-outline"></ion-icon>
+      <span>Movies</span>
+    </div>
+  </div>
   <div class="myshows-screen">
     <div class="myshows-inner">
       <div class="myshows-cards">
@@ -18,7 +28,7 @@
             </template>
           </div>
           <div class="myshows-card-footer left-align">
-            <ion-icon name="tv-outline" style="color: #e75480; font-size: 20px; vertical-align: middle;" />
+            <ion-icon name="add-circle-outline" style="color: #e75480; font-size: 20px; vertical-align: middle;" />
             <span>Watchlist</span>
             <span class="count">{{ watchlist.length }}</span>
           </div>
@@ -109,13 +119,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
 
 const router = useRouter()
 const showsStore = useShowsStore()
+
+onMounted(() => {
+  showsStore.setSearchQuery('')
+})
 
 const watchlist = computed(() => showsStore.watchlist)
 const watched = computed(() => showsStore.watched)
@@ -128,6 +142,8 @@ const watching = computed(() => {
 const watchlistPreview = computed(() => watchlist.value.slice(0, 4))
 const watchedPreview = computed(() => watched.value.slice(0, 4))
 const favoritesPreview = computed(() => favorites.value.slice(0, 4))
+
+const selectedTab = ref('series')
 
 function goTo(type: string) {
   if (type === 'watchlist') router.push({ name: 'watchlist' })
@@ -235,7 +251,7 @@ function goToSummary(movie: any) {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -246,6 +262,8 @@ function goToSummary(movie: any) {
   width: 100%;
   justify-content: center;
   margin-bottom: 40px;
+  overflow-x: visible;
+  overflow-y: visible;
 }
 .myshows-card {
   background: #181818;
@@ -431,12 +449,21 @@ function goToSummary(movie: any) {
 }
 @media (max-width: 900px) {
   .myshows-cards {
-    flex-direction: column;
-    gap: 24px;
-    align-items: center;
+    flex-direction: row;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+  }
+  .myshows-card {
+    min-width: 220px;
+    max-width: 260px;
+    flex: 0 0 auto;
   }
   .myshows-inner {
-    padding: 12px;
+    padding: 0 12px 12px 12px;
   }
 }
 .custom-watching-card {
@@ -570,7 +597,7 @@ function goToSummary(movie: any) {
     margin-right: 0;
   }
   .watching-card-actions {
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
   }
 }
@@ -579,6 +606,71 @@ function goToSummary(movie: any) {
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
+}
+/* Barra superior de tabs TV Series / Movies */
+.myshows-topbar {
+  display: flex;
+  width: 100vw;
+  min-width: 100vw;
+  margin: 0 0 24px 0;
+  background: #181a20;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.topbar-tab {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 0 10px 0;
+  color: #aaa;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  background: transparent;
+}
+.topbar-tab ion-icon {
+  font-size: 22px;
+}
+.topbar-tab.active {
+  color: #fff;
+}
+.topbar-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: #6c7ae0;
+  border-radius: 2px 2px 0 0;
+}
+@media (max-width: 900px) {
+  .myshows-topbar {
+    width: 100vw;
+    min-width: 100vw;
+    margin-bottom: 16px;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+  .topbar-tab {
+    font-size: 15px;
+    padding: 12px 0 8px 0;
+  }
+  .topbar-tab ion-icon {
+    font-size: 19px;
+  }
 }
 </style>
 

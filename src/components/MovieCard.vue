@@ -16,7 +16,7 @@
             :title="isInWatchlist ? 'Quitar de Watchlist' : 'Agregar a Watchlist'"
             :disabled="isLoading"
           >
-            <ion-icon name="tv-outline"></ion-icon>
+            <ion-icon name="add-circle-outline"></ion-icon>
           </button>
 
           <button
@@ -75,7 +75,7 @@ const isInFavorites = computed(() => showsStore.isInFavorites(props.movie.id))
 const statusIcon = computed(() => {
   if (isInFavorites.value) return { name: 'star-outline', color: '#FFD700', title: 'Favorito' }
   if (isInWatched.value) return { name: 'checkmark-circle-outline', color: '#28a745', title: 'Vista' }
-  if (isInWatchlist.value) return { name: 'tv-outline', color: '#e75480', title: 'Watchlist' }
+  if (isInWatchlist.value) return { name: 'add-circle-outline', color: '#e75480', title: 'Watchlist' }
   return null
 })
 

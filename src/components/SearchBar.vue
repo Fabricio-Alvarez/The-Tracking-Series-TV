@@ -4,7 +4,7 @@
       <input
         v-model="localQuery"
         @input="handleSearch"
-        @keyup.enter="performSearch"
+        @keyup.enter.prevent
         type="text"
         placeholder="Buscar series..."
         class="search-input"
@@ -53,6 +53,8 @@ const handleSearch = () => {
   searchTimeout = setTimeout(() => {
     if (localQuery.value.trim()) {
       performSearch()
+    } else {
+      showsStore.setSearchResults([])
     }
   }, 500)
 }

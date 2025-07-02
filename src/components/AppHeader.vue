@@ -47,6 +47,8 @@ const isLoading = ref(false)
 const error = ref('')
 const searchInput = ref<HTMLInputElement | null>(null)
 
+let searchTimeout: NodeJS.Timeout | null = null
+
 const performSearch = async () => {
   if (!searchQuery.value.trim()) return
   isLoading.value = true
@@ -72,15 +74,18 @@ const clearSearchAndGoHome = () => {
   router.push('/')
 }
 
-// Watch para limpiar resultados cuando se borra la búsqueda
+// Debounce para búsqueda automática
 watch(
   () => searchQuery.value,
-  (newQuery) => {
-    if (!newQuery) {
+  (newQuery, oldQuery) => {
+    if (searchTimeout) clearTimeout(searchTimeout)
+    if (!newQuery.trim()) {
       showsStore.setSearchResults([])
-      error.value = ''
-      isLoading.value = false
+      return
     }
+    searchTimeout = setTimeout(() => {
+      performSearch()
+    }, 1000)
   }
 )
 </script>
