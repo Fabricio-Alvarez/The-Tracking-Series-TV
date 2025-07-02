@@ -30,7 +30,7 @@
         </router-link>
 
         <router-link to="/favorites" class="nav-link" active-class="active">
-          <span class="nav-icon">❤️</span>
+          <span class="nav-icon">⭐</span>
           <span class="nav-text">Favoritos</span>
           <span v-if="favoritesCount > 0" class="nav-badge">{{ favoritesCount }}</span>
         </router-link>

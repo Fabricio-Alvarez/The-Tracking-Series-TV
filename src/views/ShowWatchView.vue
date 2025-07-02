@@ -771,6 +771,9 @@ function navigateToSeason(seasonNumber: number) {
 
 <template>
   <div class="watch-view">
+    <button class="back-btn" @click="router.back()" title="Regresar">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
     <div v-if="isLoading" class="loading">Cargando...</div>
     <template v-else>
       <section class="section">
@@ -844,6 +847,32 @@ function navigateToSeason(seasonNumber: number) {
   border-radius: 16px;
   max-width: 420px;
   margin: 2rem auto;
+  position: relative;
+  padding-top: 44px;
+}
+/* Botón de regreso circular */
+.back-btn {
+  position: absolute;
+  top: 4px;
+  left: 18px;
+  background: rgba(30,30,30,0.45);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+.back-btn:hover {
+  background: rgba(30,30,30,0.7);
+}
+.back-btn ion-icon {
+  color: #fff;
+  font-size: 24px;
 }
 .section {
   margin-bottom: 2rem;

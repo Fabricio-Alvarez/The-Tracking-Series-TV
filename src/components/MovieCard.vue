@@ -1,7 +1,10 @@
 <template>
   <div class="movie-item" @dblclick="goToDetail" @click="handleCardClick">
     <div class="movie-card" @click="$emit('click', movie)">
-      <div v-if="showRating" class="movie-rating">{{ movie.rating }}</div>
+      <div v-if="showStatusIcon" class="movie-rating status-icon">
+        <ion-icon v-if="statusIcon" :name="statusIcon.name" :style="{ color: statusIcon.color }" :title="statusIcon.title" />
+      </div>
+      <div v-else-if="showRating" class="movie-rating">{{ movie.rating }}</div>
       <img :src="movie.image" :alt="movie.title" class="movie-image" @error="handleImageError" />
 
       <!-- Overlay con botones de acción -->
@@ -19,19 +22,19 @@
           <button
             @click.stop="toggleWatched"
             :class="['action-btn', { active: isInWatched }]"
-            :title="isInWatched ? 'Quitar de Vistas' : 'Marcar como Vista'"
+            :title="isInWatched ? 'Quitar de Vistas' : 'Marcar como Watched'"
             :disabled="isLoading"
           >
-            <ion-icon name="checkmark-outline"></ion-icon>
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
           </button>
 
           <button
             @click.stop="toggleFavorites"
             :class="['action-btn', { active: isInFavorites }]"
-            :title="isInFavorites ? 'Quitar de Favoritos' : 'Agregar a Favoritos'"
+            :title="isInFavorites ? 'Quitar de Favoritos' : 'Agregar a Favorites'"
             :disabled="isLoading"
           >
-            <ion-icon name="heart-outline"></ion-icon>
+            <ion-icon name="star-outline"></ion-icon>
           </button>
         </div>
       </div>
@@ -51,11 +54,13 @@ interface Props {
   movie: Movie
   showRating?: boolean
   showYear?: boolean
+  showStatusIcon?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showRating: true,
   showYear: false,
+  showStatusIcon: false,
 })
 
 const showsStore = useShowsStore()
@@ -66,6 +71,13 @@ const router = useRouter()
 const isInWatchlist = computed(() => showsStore.isInWatchlist(props.movie.id))
 const isInWatched = computed(() => showsStore.isInWatched(props.movie.id))
 const isInFavorites = computed(() => showsStore.isInFavorites(props.movie.id))
+
+const statusIcon = computed(() => {
+  if (isInFavorites.value) return { name: 'star-outline', color: '#FFD700', title: 'Favorito' }
+  if (isInWatched.value) return { name: 'checkmark-circle-outline', color: '#28a745', title: 'Vista' }
+  if (isInWatchlist.value) return { name: 'tv-outline', color: '#e75480', title: 'Watchlist' }
+  return null
+})
 
 // Event handlers
 const toggleWatchlist = async () => {
@@ -268,5 +280,11 @@ function handleCardClick(event: MouseEvent) {
   .action-btn ion-icon {
     font-size: 20px;
   }
+}
+
+/* Icono de status personalizado */
+.status-icon ion-icon {
+  font-size: 20px;
+  /* Puedes ajustar el tamaño aquí */
 }
 </style>

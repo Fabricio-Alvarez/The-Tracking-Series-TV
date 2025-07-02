@@ -25,8 +25,9 @@
           v-for="movie in watchlist"
           :key="movie.id"
           :movie="movie"
-          :show-rating="true"
+          :show-rating="false"
           :show-year="true"
+          :show-status-icon="true"
         />
       </div>
     </div>

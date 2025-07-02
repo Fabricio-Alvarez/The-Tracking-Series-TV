@@ -32,7 +32,7 @@ import { useShowsStore } from '@/stores/shows'
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon">❤️</div>
+          <div class="stat-icon">⭐</div>
           <div class="stat-content">
             <h3>Favoritos</h3>
             <p class="stat-number">{{ favorites.length }}</p>
@@ -64,7 +64,7 @@ import { useShowsStore } from '@/stores/shows'
         </router-link>
 
         <router-link to="/favorites" class="action-card">
-          <div class="action-icon">❤️</div>
+          <div class="action-icon">⭐</div>
           <h3>Mis Favoritos</h3>
           <p>Accede a tus series favoritas</p>
         </router-link>

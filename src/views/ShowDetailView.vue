@@ -321,6 +321,9 @@ onMounted(async () => {
     <p>No se encontró la serie.</p>
   </div>
   <div v-else-if="show" class="show-detail">
+    <button class="back-btn" @click="router.back()" title="Regresar">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
     <img :src="show.image || '/placeholder-poster.jpg'" alt="Poster" class="poster" />
     <div class="show-meta">
       <span class="netflix">N</span>
@@ -347,15 +350,15 @@ onMounted(async () => {
     <div class="actions">
       <button :class="['action-btn', { active: isInWatchlist }]" @click="handleWatchlist" :disabled="isLoading">
         <ion-icon name="bookmark-outline" class="icon-action"></ion-icon>
-        <span>Add to watchlist</span>
+        <span>Agregar a Watchlist</span>
       </button>
       <button :class="['action-btn', { active: isInWatched }]" @click="handleWatched" :disabled="isLoading">
-        <ion-icon name="checkmark-done-outline" class="icon-action"></ion-icon>
-        <span>Mark as watched</span>
+        <ion-icon name="checkmark-circle-outline" class="icon-action"></ion-icon>
+        <span>Marcar como Watched</span>
       </button>
       <button :class="['action-btn', { active: isInFavorites }]" @click="handleFavorites" :disabled="isLoading">
         <ion-icon name="star-outline" class="icon-action"></ion-icon>
-        <span>Add to favorites</span>
+        <span>Agregar a Favorites</span>
       </button>
     </div>
   </div>
@@ -373,6 +376,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 .poster {
   width: 100%;
@@ -520,5 +524,29 @@ onMounted(async () => {
 .icon-action {
   font-size: 1.3rem;
   color: #fff;
+}
+/* Botón de regreso */
+.back-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: rgba(30,30,30,0.45);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+.back-btn:hover {
+  background: rgba(30,30,30,0.7);
+}
+.back-btn ion-icon {
+  color: #fff;
+  font-size: 24px;
 }
 </style> 

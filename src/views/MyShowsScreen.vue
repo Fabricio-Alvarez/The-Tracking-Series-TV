@@ -5,17 +5,20 @@
         <!-- Watchlist Card -->
         <div class="myshows-card" @click="goTo('watchlist')">
           <div class="myshows-preview">
-            <img
-              v-for="movie in watchlistPreview"
-              :key="movie.id"
-              :src="movie.image"
-              :alt="movie.title"
-              class="preview-img"
-              @error="handleImageError"
-            />
-            <div v-if="watchlistPreview.length === 0" class="empty-preview">Sin series</div>
+            <template v-for="(movie, idx) in 4">
+              <img
+                v-if="watchlistPreview[idx]"
+                :key="'watchlist-img-' + idx"
+                :src="watchlistPreview[idx].image"
+                :alt="watchlistPreview[idx].title"
+                class="preview-img"
+                @error="handleImageError"
+              />
+              <div v-else :key="'watchlist-placeholder-' + idx" class="preview-img placeholder-img"></div>
+            </template>
           </div>
-          <div class="myshows-card-footer">
+          <div class="myshows-card-footer left-align">
+            <ion-icon name="tv-outline" style="color: #e75480; font-size: 20px; vertical-align: middle;" />
             <span>Watchlist</span>
             <span class="count">{{ watchlist.length }}</span>
           </div>
@@ -23,17 +26,20 @@
         <!-- Watched Card -->
         <div class="myshows-card" @click="goTo('watched')">
           <div class="myshows-preview">
-            <img
-              v-for="movie in watchedPreview"
-              :key="movie.id"
-              :src="movie.image"
-              :alt="movie.title"
-              class="preview-img"
-              @error="handleImageError"
-            />
-            <div v-if="watchedPreview.length === 0" class="empty-preview">Sin series</div>
+            <template v-for="(movie, idx) in 4">
+              <img
+                v-if="watchedPreview[idx]"
+                :key="'watched-img-' + idx"
+                :src="watchedPreview[idx].image"
+                :alt="watchedPreview[idx].title"
+                class="preview-img"
+                @error="handleImageError"
+              />
+              <div v-else :key="'watched-placeholder-' + idx" class="preview-img placeholder-img"></div>
+            </template>
           </div>
-          <div class="myshows-card-footer">
+          <div class="myshows-card-footer left-align">
+            <ion-icon name="checkmark-circle-outline" style="color: #28a745; font-size: 20px; vertical-align: middle;" />
             <span>Watched</span>
             <span class="count">{{ watched.length }}</span>
           </div>
@@ -41,17 +47,20 @@
         <!-- Favorites Card -->
         <div class="myshows-card" @click="goTo('favorites')">
           <div class="myshows-preview">
-            <img
-              v-for="movie in favoritesPreview"
-              :key="movie.id"
-              :src="movie.image"
-              :alt="movie.title"
-              class="preview-img"
-              @error="handleImageError"
-            />
-            <div v-if="favoritesPreview.length === 0" class="empty-preview">Sin series</div>
+            <template v-for="(movie, idx) in 4">
+              <img
+                v-if="favoritesPreview[idx]"
+                :key="'favorites-img-' + idx"
+                :src="favoritesPreview[idx].image"
+                :alt="favoritesPreview[idx].title"
+                class="preview-img"
+                @error="handleImageError"
+              />
+              <div v-else :key="'favorites-placeholder-' + idx" class="preview-img placeholder-img"></div>
+            </template>
           </div>
-          <div class="myshows-card-footer">
+          <div class="myshows-card-footer left-align">
+            <ion-icon name="star-outline" style="color: #FFD700; font-size: 20px; vertical-align: middle;" />
             <span>Favorites</span>
             <span class="count">{{ favorites.length }}</span>
           </div>
@@ -61,13 +70,15 @@
       <div class="watching-list">
         <template v-if="watching.length > 0">
           <div class="watching-grid">
-            <div v-for="movie in watching" :key="movie.id" class="watching-progress-card custom-watching-card">
+            <div v-for="(movie, idx) in watching" :key="movie.id" class="watching-progress-card custom-watching-card">
               <div class="watching-card-media">
                 <img :src="movie.image" :alt="movie.title" class="watching-card-img" @error="handleImageError" />
                 <div class="watching-card-info">
                   <div class="watching-card-title">{{ movie.title }}</div>
                   <div class="watching-card-episode">
-                    <span class="episode-new">NEW!</span>
+                    <template v-if="idx === 0">
+                      <span class="episode-new">NEW!</span>
+                    </template>
                     <span class="episode-code">{{ getLastWatchedEpisodeCode(movie) }}</span>
                     <span class="episode-title">{{ movie.seasons && movie.seasons.length > 0 ? movie.seasons[getSeasonProgress(movie).season-1]?.title || '' : '' }}</span>
                   </div>
@@ -257,8 +268,9 @@ function goToSummary(movie: any) {
 .myshows-preview {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 8px;
-  min-height: 120px;
+  min-height: 200px;
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
@@ -271,10 +283,9 @@ function goToSummary(movie: any) {
   background: #333;
   box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
-.empty-preview {
-  color: #888;
-  font-size: 14px;
-  font-style: italic;
+.placeholder-img {
+  background: transparent;
+  box-shadow: none;
 }
 .myshows-card-footer {
   width: 100%;
@@ -562,6 +573,12 @@ function goToSummary(movie: any) {
     flex-direction: column;
     gap: 8px;
   }
+}
+.myshows-card-footer.left-align {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
 }
 </style>
 

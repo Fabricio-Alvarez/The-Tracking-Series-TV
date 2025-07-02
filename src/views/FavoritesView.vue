@@ -14,7 +14,7 @@
       </div>
 
       <div v-if="favorites.length === 0" class="empty-state">
-        <div class="empty-icon">❤️</div>
+        <div class="empty-icon">⭐</div>
         <h3>No tienes favoritos</h3>
         <p>Agrega series a favoritos desde la pantalla de exploración</p>
         <router-link to="/" class="cta-button"> Explorar Series </router-link>

@@ -14,16 +14,16 @@
           <button
             @click="toggleWatched"
             :class="['action-btn', { active: isInWatched }]"
-            :title="isInWatched ? 'Quitar de Vistas' : 'Marcar como Vista'"
+            :title="isInWatched ? 'Quitar de Vistas' : 'Marcar como Watched'"
           >
             ✅
           </button>
           <button
             @click="toggleFavorites"
             :class="['action-btn', { active: isInFavorites }]"
-            :title="isInFavorites ? 'Quitar de Favoritos' : 'Agregar a Favoritos'"
+            :title="isInFavorites ? 'Quitar de Favoritos' : 'Agregar a Favorites'"
           >
-            ❤️
+            ⭐
           </button>
         </div>
       </div>
