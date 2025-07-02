@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getSeriesPeopleMock, getSeriesImagesMock } from '@/services/tvdbService'
+import { getSeriesPeopleMock, getSeriesImagesMock, TVDBService } from '@/services/tvdbService'
 import { useShowsStore } from '@/stores/shows'
 
 const route = useRoute()
@@ -20,6 +20,40 @@ const show = computed(() => showsStore.getShowById(showId))
 const showTitle = computed(() => show.value?.title || '')
 
 const isLoading = ref(true)
+
+// Función para cargar datos reales de la API
+async function loadRealWatchData() {
+  if (!show.value) return
+  
+  try {
+    // Intentar obtener temporadas reales de la API
+    const realSeasons = await TVDBService.getSeasons(showId)
+    if (realSeasons.length > 0) {
+      seasons.value = realSeasons.map(season => ({
+        number: season.seasonNumber,
+        watched: 0, // Se calcula desde localStorage
+        total: season.episodeCount
+      }))
+    }
+    
+    // Intentar obtener cast real de la API
+    try {
+      const peopleResponse = await TVDBService.getShowDetails(showId)
+      if (peopleResponse?.creators) {
+        // Usar creadores como cast si no hay cast específico
+        cast.value = peopleResponse.creators.slice(0, 5).map((creator, index) => ({
+          name: creator,
+          image: `https://via.placeholder.com/150x200/333/fff?text=${creator.charAt(0)}`
+        }))
+      }
+    } catch (error) {
+      console.log('No se pudo obtener cast de la API')
+    }
+    
+  } catch (error) {
+    console.error('Error loading real watch data:', error)
+  }
+}
 
 const seriesWatchData: Record<string, any> = {
   'wednesday': {
@@ -749,17 +783,34 @@ async function fetchData() {
     console.log('Loaded cast:', cast.value)
     console.log('Loaded images:', images.value)
   } else {
-    // Mock genérico si no hay datos personalizados
-    cast.value = [
-      { name: 'Actor 1', image: '/placeholder-poster.jpg' },
-      { name: 'Actor 2', image: '/placeholder-poster.jpg' },
-      { name: 'Actor 3', image: '/placeholder-poster.jpg' },
-      { name: 'Actor 4', image: '/placeholder-poster.jpg' },
-    ]
-    images.value = ['/placeholder-poster.jpg']
-    trailers.value = [{ image: '/placeholder-poster.jpg', url: '#' }]
-    nextEpisode.value = { date: '', code: '', name: '' }
-    seasons.value = [{ number: 1, watched: 0, total: 10 }]
+    // Intentar cargar datos reales de la API
+    await loadRealWatchData()
+    
+    // Si no se pudieron cargar datos reales, usar datos genéricos
+    if (cast.value.length === 0) {
+      cast.value = [
+        { name: 'Actor 1', image: '/placeholder-poster.jpg' },
+        { name: 'Actor 2', image: '/placeholder-poster.jpg' },
+        { name: 'Actor 3', image: '/placeholder-poster.jpg' },
+        { name: 'Actor 4', image: '/placeholder-poster.jpg' },
+      ]
+    }
+    
+    if (images.value.length === 0) {
+      images.value = ['/placeholder-poster.jpg']
+    }
+    
+    if (trailers.value.length === 0) {
+      trailers.value = [{ image: '/placeholder-poster.jpg', url: '#' }]
+    }
+    
+    if (!nextEpisode.value || !nextEpisode.value.date) {
+      nextEpisode.value = { date: 'TBA', code: 'TBA', name: 'TBA' }
+    }
+    
+    if (seasons.value.length === 0) {
+      seasons.value = [{ number: 1, watched: 0, total: 10 }]
+    }
   }
   isLoading.value = false
 }

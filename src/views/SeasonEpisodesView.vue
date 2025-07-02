@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
+import { RealDataService } from '@/services/tvdbService'
 
 const route = useRoute()
 const router = useRouter()
@@ -1811,64 +1812,87 @@ onMounted(() => {
   loadEpisodes()
 })
 
-function loadEpisodes() {
+async function loadEpisodes() {
   isLoading.value = true
   
-  const showTitleLower = showTitle.value.toLowerCase()
-  
-  // Buscar datos específicos para cada serie
-  if (showTitleLower.includes('peaky blinders')) {
-    episodes.value = peakyBlindersEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('wednesday')) {
-    episodes.value = wednesdayEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('stranger things')) {
-    episodes.value = strangerThingsEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('mandalorian')) {
-    episodes.value = mandalorianEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('crown')) {
-    episodes.value = crownEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('dark')) {
-    episodes.value = darkEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('boys')) {
-    episodes.value = boysEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('better call saul')) {
-    episodes.value = betterCallSaulEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('money heist') || showTitleLower.includes('casa de papel')) {
-    episodes.value = moneyHeistEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('office')) {
-    episodes.value = officeEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('succession')) {
-    episodes.value = successionEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('ozark')) {
-    episodes.value = ozarkEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('westworld')) {
-    episodes.value = westworldEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('fleabag')) {
-    episodes.value = fleabagEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('maisel')) {
-    episodes.value = marvelousMrsMaiselEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('chernobyl')) {
-    episodes.value = chernobylEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('mindhunter')) {
-    episodes.value = mindhunterEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('expanse')) {
-    episodes.value = expanseEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('barry')) {
-    episodes.value = barryEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('leftovers')) {
-    episodes.value = leftoversEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('atlanta')) {
-    episodes.value = atlantaEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('good place')) {
-    episodes.value = goodPlaceEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('severance')) {
-    episodes.value = severanceEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('ted lasso')) {
-    episodes.value = tedLassoEpisodes[seasonNumber] || []
-  } else if (showTitleLower.includes('witcher')) {
-    episodes.value = witcherEpisodes[seasonNumber] || []
-  } else {
-    // Para otras series, crear episodios genéricos
+  try {
+    // Usar el nuevo servicio de datos reales
+    const realEpisodes = await RealDataService.getRealEpisodes(showId, showTitle.value, seasonNumber)
+    
+    if (realEpisodes.length > 0) {
+      episodes.value = realEpisodes
+    } else {
+      // Fallback a datos hardcodeados para series específicas
+      const showTitleLower = showTitle.value.toLowerCase()
+      
+      if (showTitleLower.includes('peaky blinders')) {
+        episodes.value = peakyBlindersEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('wednesday')) {
+        episodes.value = wednesdayEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('stranger things')) {
+        episodes.value = strangerThingsEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('mandalorian')) {
+        episodes.value = mandalorianEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('crown')) {
+        episodes.value = crownEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('dark')) {
+        episodes.value = darkEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('boys')) {
+        episodes.value = boysEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('better call saul')) {
+        episodes.value = betterCallSaulEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('money heist') || showTitleLower.includes('casa de papel')) {
+        episodes.value = moneyHeistEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('office')) {
+        episodes.value = officeEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('succession')) {
+        episodes.value = successionEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('ozark')) {
+        episodes.value = ozarkEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('westworld')) {
+        episodes.value = westworldEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('fleabag')) {
+        episodes.value = fleabagEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('maisel')) {
+        episodes.value = marvelousMrsMaiselEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('chernobyl')) {
+        episodes.value = chernobylEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('mindhunter')) {
+        episodes.value = mindhunterEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('expanse')) {
+        episodes.value = expanseEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('barry')) {
+        episodes.value = barryEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('leftovers')) {
+        episodes.value = leftoversEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('atlanta')) {
+        episodes.value = atlantaEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('good place')) {
+        episodes.value = goodPlaceEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('severance')) {
+        episodes.value = severanceEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('ted lasso')) {
+        episodes.value = tedLassoEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('witcher')) {
+        episodes.value = witcherEpisodes[seasonNumber] || []
+      } else {
+        // Para otras series, crear episodios genéricos
+        episodes.value = Array.from({ length: 10 }, (_, i) => ({
+          id: i + 1,
+          name: `Episode ${i + 1}`,
+          description: `Description for episode ${i + 1} of ${showTitle.value} season ${seasonNumber}.`,
+          watched: false,
+          airDate: 'TBA'
+        }))
+      }
+    }
+    
+    // Cargar estado guardado desde localStorage
+    loadWatchedState()
+    
+  } catch (error) {
+    console.error('Error loading episodes:', error)
+    // Fallback a episodios genéricos en caso de error
     episodes.value = Array.from({ length: 10 }, (_, i) => ({
       id: i + 1,
       name: `Episode ${i + 1}`,
@@ -1876,12 +1900,9 @@ function loadEpisodes() {
       watched: false,
       airDate: 'TBA'
     }))
+  } finally {
+    isLoading.value = false
   }
-  
-  // Cargar estado guardado desde localStorage
-  loadWatchedState()
-  
-  isLoading.value = false
 }
 
 function loadWatchedState() {

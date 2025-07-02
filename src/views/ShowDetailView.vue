@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useShowsStore } from '@/stores/shows'
 import type { Movie } from '@/services/tvdbService'
+import TVDBService from '@/services/tvdbService'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +20,27 @@ const isInFavorites = computed(() => show.value && showsStore.isInFavorites(show
 const isInWatching = computed(() => show.value && showsStore.isInWatching(show.value.id))
 
 const isLoading = ref(false)
+const enhancedShow = ref<Movie | null>(null)
+
+// Función para cargar datos reales de la API
+async function loadRealShowData() {
+  if (!show.value) return
+  
+  try {
+    isLoading.value = true
+    const realShowData = await TVDBService.getShowDetails(showId)
+    
+    if (realShowData) {
+      enhancedShow.value = realShowData
+      // Actualizar el store con los datos reales
+      showsStore.addShowsToResults([realShowData])
+    }
+  } catch (error) {
+    console.error('Error loading real show data:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 // Diccionario de overrides para series famosas
 const seriesOverrides: Record<string, {
@@ -228,21 +250,41 @@ const customOverride = computed(() => {
 })
 
 const displayGenres = computed(() => {
+  // Priorizar datos reales de la API
+  if (enhancedShow.value?.genres && enhancedShow.value.genres.length > 0) {
+    return enhancedShow.value.genres
+  }
   if (customOverride.value) return customOverride.value.genres
   return show.value?.genres || []
 })
+
 const displaySeasons = computed(() => {
+  // Priorizar datos reales de la API
+  if (enhancedShow.value?.seasons) {
+    return enhancedShow.value.seasons
+  }
   if (customOverride.value) return customOverride.value.seasons
   return show.value?.seasons || 1
 })
+
 const displayCreators = computed(() => {
+  // Priorizar datos reales de la API
+  if (enhancedShow.value?.creators && enhancedShow.value.creators.length > 0) {
+    return enhancedShow.value.creators
+  }
   if (customOverride.value) return customOverride.value.creators
   return show.value?.creators || []
 })
+
 const displayStatus = computed(() => {
+  // Priorizar datos reales de la API
+  if (enhancedShow.value?.status) {
+    return enhancedShow.value.status
+  }
   if (customOverride.value) return customOverride.value.status
   return show.value?.status
 })
+
 const displayRuntime = computed(() => {
   if (customOverride.value) return customOverride.value.runtime
   return '45m'
@@ -310,6 +352,9 @@ onMounted(async () => {
     loading.value = false
     if (!loaded) notFound.value = true
   }
+  
+  // Cargar datos reales de la API para mejorar la información
+  await loadRealShowData()
 })
 </script>
 
