@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import BottomNavigation from '@/components/BottomNavigation.vue'
+import UserLoginForm from '@/components/UserLoginForm.vue'
+// import DatabaseStatus from '@/components/DatabaseStatus.vue'
 
 const showsStore = useShowsStore()
+const isLoggedIn = computed(() => showsStore.currentUser !== null)
 
 onMounted(async () => {
-  // Inicializar datos desde localStorage
   showsStore.initializeFromStorage()
-
-  // Cargar usuario actual si existe
   await showsStore.loadCurrentUser()
 })
 </script>
 
 <template>
   <div id="app">
+    <!-- <DatabaseStatus /> -->
     <main class="main-content">
-      <router-view />
+      <UserLoginForm v-if="!isLoggedIn" />
+      <router-view v-else />
     </main>
-    <BottomNavigation />
+    <BottomNavigation v-if="isLoggedIn" />
   </div>
 </template>
 

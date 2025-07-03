@@ -14,6 +14,18 @@ export const useShowsStore = defineStore('shows', () => {
   // Estado del usuario
   const currentUser = ref<User | null>(null)
 
+  // Inicializar el store automáticamente
+  const initializeStore = async () => {
+    try {
+      await loadCurrentUser()
+    } catch (error) {
+      console.error('Error inicializando store:', error)
+    }
+  }
+
+  // Llamar a la inicialización cuando se crea el store
+  initializeStore()
+
   // Listas del usuario
   const watchlist = ref<Movie[]>([])
   const watched = ref<Movie[]>([])
@@ -47,28 +59,37 @@ export const useShowsStore = defineStore('shows', () => {
   // Métodos de usuario
   async function loginUser(email: string, name: string) {
     try {
-      const user = await TursoService.createUser(email, name)
+      let user = await TursoService.getUserByEmail(email)
+      if (!user) {
+        user = await TursoService.createUser(email, name)
+      }
       currentUser.value = user
       await loadUserShows()
       return user
-    } catch (error) {
-      console.error('Error al crear usuario:', error)
+    } catch (error: any) {
+      if (error.message && error.message.includes('409')) {
+        throw new Error('El email ya está registrado')
+      }
       throw error
     }
   }
 
   async function loadCurrentUser() {
-    try {
-      const user = await TursoService.getCurrentUser()
-      currentUser.value = user
-      if (user) {
-        await loadUserShows()
-      }
-      return user
-    } catch (error) {
-      console.error('Error al cargar usuario:', error)
+    // No restaurar usuario automáticamente
+    currentUser.value = null
+    clearAllLists()
       return null
     }
+
+  function clearAllLists() {
+    watchlist.value = []
+    watched.value = []
+    favorites.value = []
+    watching.value = []
+    localStorage.removeItem('watchlist')
+    localStorage.removeItem('watched')
+    localStorage.removeItem('favorites')
+    localStorage.removeItem('watching')
   }
 
   // Métodos para watchlist
@@ -83,7 +104,8 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'watchlist')
+      const showId = String(movie.id).replace(/^series-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'watchlist')
       if (!watchlist.value.find((m) => m.id === movie.id)) {
         watchlist.value.push(movie)
       }
@@ -137,13 +159,14 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'watched')
+      const showId = String(movie.id).replace(/^series-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'watched')
       if (!watched.value.find((m) => m.id === movie.id)) {
         watched.value.push(movie)
         // Remover de watching si está ahí
         if (watching.value.find((m) => m.id === movie.id)) {
           watching.value = watching.value.filter((m) => m.id !== movie.id)
-          saveToLocalStorage('watching', watching.value)
+          await TursoService.removeUserShow(currentUser.value.id, showId, 'watching')
         }
       }
     } catch (error) {
@@ -196,7 +219,8 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      await TursoService.addUserShow(currentUser.value.id, String(movie.id), 'favorites')
+      const showId = String(movie.id).replace(/^series-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'favorites')
       if (!favorites.value.find((m) => m.id === movie.id)) {
         favorites.value.push(movie)
       }
@@ -247,7 +271,21 @@ export const useShowsStore = defineStore('shows', () => {
       }
       return
     }
-    // Aquí podrías agregar lógica para Turso si lo deseas
+
+    try {
+      const showId = String(movie.id).replace(/^series-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'watching')
+      if (!watching.value.find((m) => m.id === movie.id)) {
+        watching.value.push(movie)
+        // Remover de watched si está ahí
+        if (watched.value.find((m) => m.id === movie.id)) {
+          watched.value = watched.value.filter((m) => m.id !== movie.id)
+          await TursoService.removeUserShow(currentUser.value.id, showId, 'watched')
+        }
+      }
+    } catch (error) {
+      console.error('Error al agregar a watching:', error)
+      // Fallback a localStorage
     if (!watching.value.find((m) => m.id === movie.id)) {
       watching.value.push(movie)
       saveToLocalStorage('watching', watching.value)
@@ -255,6 +293,7 @@ export const useShowsStore = defineStore('shows', () => {
       if (watched.value.find((m) => m.id === movie.id)) {
         watched.value = watched.value.filter((m) => m.id !== movie.id)
         saveToLocalStorage('watched', watched.value)
+        }
       }
     }
   }
@@ -265,23 +304,53 @@ export const useShowsStore = defineStore('shows', () => {
       saveToLocalStorage('watching', watching.value)
       return
     }
-    // Aquí podrías agregar lógica para Turso si lo deseas
+
+    try {
+      await TursoService.removeUserShow(currentUser.value.id, String(movieId), 'watching')
+      watching.value = watching.value.filter((m) => String(m.id) !== String(movieId))
+    } catch (error) {
+      console.error('Error al remover de watching:', error)
+      // Fallback a localStorage
     watching.value = watching.value.filter((m) => String(m.id) !== String(movieId))
     saveToLocalStorage('watching', watching.value)
+    }
   }
 
   function isInWatching(movieId: string | number): boolean {
     return watching.value.some((m) => String(m.id) === String(movieId))
   }
 
-  // Cargar shows del usuario
+  // Cargar shows del usuario desde el backend y mapear a Movie[]
   async function loadUserShows() {
     if (!currentUser.value) return
     try {
-      watchlist.value = loadFromLocalStorage('watchlist')
-      watched.value = loadFromLocalStorage('watched')
-      favorites.value = loadFromLocalStorage('favorites')
-      watching.value = loadFromLocalStorage('watching')
+      // 1. Obtener los user shows del backend
+      const watchlistShows = await TursoService.getUserShows(currentUser.value.id, 'watchlist')
+      const watchedShows = await TursoService.getUserShows(currentUser.value.id, 'watched')
+      const favoritesShows = await TursoService.getUserShows(currentUser.value.id, 'favorites')
+      const watchingShows = await TursoService.getUserShows(currentUser.value.id, 'watching')
+
+      // 2. Mapear a detalles completos usando TVDBService y filtrar nulls
+      watchlist.value = (
+        await Promise.all(
+          watchlistShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+        )
+      ).filter((m): m is Movie => Boolean(m))
+      watched.value = (
+        await Promise.all(
+          watchedShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+        )
+      ).filter((m): m is Movie => Boolean(m))
+      favorites.value = (
+        await Promise.all(
+          favoritesShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+        )
+      ).filter((m): m is Movie => Boolean(m))
+      watching.value = (
+        await Promise.all(
+          watchingShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+        )
+      ).filter((m): m is Movie => Boolean(m))
     } catch (error) {
       console.error('Error al cargar shows del usuario:', error)
     }
