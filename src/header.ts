@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router'
 import AppHeader from '@/components/AppHeader.vue'
+import { useShowsStore } from '@/stores/shows'
+import { watch } from 'vue'
 
 // Crear una instancia de Pinia que será compartida
 const pinia = createPinia()
@@ -14,6 +16,17 @@ function mountHeader() {
     headerApp.use(pinia)
     headerApp.use(router)
     headerApp.mount(headerElement)
+
+    // Ocultar el header si el usuario no está logueado
+    const store = useShowsStore()
+    function updateHeaderVisibility() {
+      headerElement.style.display = store.currentUser ? '' : 'none'
+    }
+    updateHeaderVisibility()
+    watch(
+      () => store.currentUser,
+      () => updateHeaderVisibility()
+    )
   }
 }
 

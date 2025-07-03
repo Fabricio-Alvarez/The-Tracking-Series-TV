@@ -1,15 +1,14 @@
 <template>
   <div class="favorites-view">
     <div class="favorites-header">
-      <h1>Mis Favoritos</h1>
-      <p>Series que más te gustan</p>
+      <h1>Favorites</h1>
     </div>
 
     <div class="favorites-content">
       <div v-if="hasFavorites" class="favorites-stats">
         <span class="stat-item">
           <span class="stat-number">{{ favorites.length }}</span>
-          <span class="stat-label">series favoritas</span>
+          <span class="stat-label">en tu lista</span>
         </span>
       </div>
 
@@ -37,19 +36,27 @@
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 const showsStore = useShowsStore()
+const route = useRoute()
 
 onBeforeRouteLeave(() => {
   showsStore.setSearchQuery('')
 })
 
 const favorites = computed(() => {
-  if (!showsStore.searchQuery) {
-    return showsStore.favorites
+  const type = route.query.type || 'series'
+  let list = showsStore.favorites
+  if (type === 'series') {
+    list = list.filter(movie => movie.mediaType !== 'movie')
+  } else if (type === 'movies') {
+    list = list.filter(movie => movie.mediaType === 'movie')
   }
-  return showsStore.favorites.filter(movie =>
+  if (!showsStore.searchQuery) {
+    return list
+  }
+  return list.filter(movie =>
     movie.title.toLowerCase().includes(showsStore.searchQuery.toLowerCase())
   )
 })

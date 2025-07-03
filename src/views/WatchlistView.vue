@@ -1,15 +1,14 @@
 <template>
   <div class="watchlist-view">
     <div class="watchlist-header">
-      <h1>Mi Watchlist</h1>
-      <p>Series que quieres ver</p>
+      <h1>Watchlist</h1>
     </div>
 
     <div class="watchlist-content">
       <div v-if="hasWatchlist" class="watchlist-stats">
         <span class="stat-item">
           <span class="stat-number">{{ watchlist.length }}</span>
-          <span class="stat-label">series en tu lista</span>
+          <span class="stat-label">en tu lista</span>
         </span>
       </div>
 
@@ -38,19 +37,27 @@
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 const showsStore = useShowsStore()
+const route = useRoute()
 
 onBeforeRouteLeave(() => {
   showsStore.setSearchQuery('')
 })
 
 const watchlist = computed(() => {
-  if (!showsStore.searchQuery) {
-    return showsStore.watchlist
+  const type = route.query.type || 'series'
+  let list = showsStore.watchlist
+  if (type === 'series') {
+    list = list.filter(movie => movie.mediaType !== 'movie')
+  } else if (type === 'movies') {
+    list = list.filter(movie => movie.mediaType === 'movie')
   }
-  return showsStore.watchlist.filter(movie =>
+  if (!showsStore.searchQuery) {
+    return list
+  }
+  return list.filter(movie =>
     movie.title.toLowerCase().includes(showsStore.searchQuery.toLowerCase())
   )
 })

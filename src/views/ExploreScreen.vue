@@ -2,15 +2,16 @@
   <div class="explore-screen">
     <div class="explore-header">
       <h1 v-if="searchQuery && searchResults.length > 0">Resultados de búsqueda</h1>
-      <template v-else>
-        <h1>Explorar Series</h1>
-        <p>Descubre las mejores series de televisión</p>
-      </template>
+      <div v-if="searchQuery && searchResults.length > 0" class="search-tabs-bar">
+        <div :class="['search-tab', selectedSearchTab === 'all' ? 'active' : '']" @click="selectedSearchTab = 'all'">All</div>
+        <div :class="['search-tab', selectedSearchTab === 'series' ? 'active' : '']" @click="selectedSearchTab = 'series'">TV Series</div>
+        <div :class="['search-tab', selectedSearchTab === 'movies' ? 'active' : '']" @click="selectedSearchTab = 'movies'">Movies</div>
+      </div>
     </div>
     <div class="explore-content">
       <div v-if="searchQuery && searchResults.length > 0" class="shows-grid">
         <MovieCard
-          v-for="movie in searchResults"
+          v-for="movie in filteredSearchResults"
           :key="movie.id as string"
           :movie="movie"
           :show-rating="true"
@@ -20,7 +21,7 @@
       <template v-else>
         <!-- Series Populares -->
         <section class="section">
-          <h2>Series Populares</h2>
+          <h2>Recommended movies</h2>
           <div v-if="isLoadingPopular" class="loading-container">
             <div class="loading-spinner"></div>
             <p>Cargando series populares...</p>
@@ -32,7 +33,7 @@
           <div v-else-if="popularSeries.length === 0" class="empty-state">
             <p>No se encontraron series populares</p>
           </div>
-          <div v-else class="shows-grid">
+          <div v-else class="shows-row-scroll">
             <MovieCard
               v-for="movie in popularSeries"
               :key="movie.id as string"
@@ -44,7 +45,7 @@
         </section>
         <!-- Series Recomendadas -->
         <section class="section">
-          <h2>Series Recomendadas</h2>
+          <h2>Popular TV series</h2>
           <div v-if="isLoadingRecommended" class="loading-container">
             <div class="loading-spinner"></div>
             <p>Cargando series recomendadas...</p>
@@ -56,7 +57,7 @@
           <div v-else-if="recommendedSeries.length === 0" class="empty-state">
             <p>No se encontraron series recomendadas</p>
           </div>
-          <div v-else class="shows-grid">
+          <div v-else class="shows-row-scroll">
             <MovieCard
               v-for="movie in recommendedSeries"
               :key="movie.id as string"
@@ -75,7 +76,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
-import { batchSearchTheTVDBExact } from '@/services/tvdbService'
+import { batchSearchTheTVDBExact, batchSearchMoviesTheTVDBExact } from '@/services/tvdbService'
 import { useRoute } from 'vue-router'
 import type { Movie } from '@/services/tvdbService'
 
@@ -90,18 +91,39 @@ const isLoadingRecommended = ref(false)
 const popularError = ref('')
 const recommendedError = ref('')
 
+const selectedSearchTab = ref('all') // 'all', 'series', 'movies'
+
+const filteredSearchResults = computed(() => {
+  if (selectedSearchTab.value === 'series') {
+    return searchResults.value.filter(item => item.mediaType !== 'movie')
+  } else if (selectedSearchTab.value === 'movies') {
+    return searchResults.value.filter(item => item.mediaType === 'movie')
+  }
+  return searchResults.value
+})
+
 const loadPopularShows = async () => {
   isLoadingPopular.value = true
   popularError.value = ''
-      try {
-      popularSeries.value = await batchSearchTheTVDBExact([
-        '견우와 선녀', 'The Mandalorian', 'Peaky Blinders', 'The Crown',
-        'Dark', 'The Boys', 'Better Call Saul', 'The Witcher',
-        'Money Heist', 'Ozark', 'Westworld', 'The Office',
-      ])
+  try {
+    // Lista de 12 películas populares internacionales
+    popularSeries.value = await batchSearchMoviesTheTVDBExact([
+      'The Shawshank Redemption',
+      'The Godfather',
+      'The Dark Knight',
+      'Pulp Fiction',
+      'Forrest Gump',
+      'Inception',
+      'Fight Club',
+      'The Matrix',
+      'Interstellar',
+      'Parasite',
+      'Gladiator',
+      'Titanic',
+    ])
     showsStore.addShowsToResults(popularSeries.value)
   } catch (error) {
-    popularError.value = 'Error al cargar series populares'
+    popularError.value = 'Error al cargar películas recomendadas'
   } finally {
     isLoadingPopular.value = false
   }
@@ -286,5 +308,55 @@ watch(
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
+}
+
+.shows-row-scroll {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.4) #222;
+}
+
+.shows-row-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+.shows-row-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.4);
+  border-radius: 8px;
+}
+.shows-row-scroll::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 8px;
+}
+
+.shows-row-scroll > * {
+  min-width: 180px;
+  max-width: 220px;
+  flex: 0 0 auto;
+}
+
+.search-tabs-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 10px 0;
+}
+.search-tab {
+  padding: 8px 22px;
+  border-radius: 20px;
+  background: #23243a;
+  color: #aaa;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.search-tab.active {
+  background: #6c7ae0;
+  color: #fff;
 }
 </style>

@@ -37,6 +37,7 @@ export interface Movie {
   genres?: string[]
   creators?: string[]
   seasons?: number
+  mediaType: 'series' | 'movie'
 }
 
 export interface Episode {
@@ -114,9 +115,49 @@ export class TVDBService {
           overview: item.overview || 'Sin descripción disponible',
           status: item.status?.name || 'Estado desconocido',
           network: item.network?.name || 'Red no disponible',
+          mediaType: 'series',
         }))
     } catch (error) {
       console.error('Error en searchShows:', error)
+      return []
+    }
+  }
+
+  /**
+   * Buscar películas por nombre
+   */
+  static async searchMovies(query: string): Promise<Movie[]> {
+    await this.authenticate()
+    try {
+      const response = await tvdbApi.get('/search', {
+        params: {
+          query,
+          type: 'movie',
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      const data = response.data
+      if (!data.data || !Array.isArray(data.data)) {
+        return []
+      }
+      // Adaptar la estructura de los resultados
+      return data.data
+        .filter((item: any) => item?.objectID || item?.id)
+        .map((item: any) => ({
+          id: item.objectID || item.id,
+          title: item.name,
+          rating: item.score?.toFixed?.(1) ?? item.score ?? '7.9',
+          image: item.image_url || item.image || '/images/placeholder.jpg',
+          year: item.firstAired?.split?.('-')[0] ?? item.year ?? '',
+          overview: item.overview || 'Sin descripción disponible',
+          status: item.status?.name || 'Estado desconocido',
+          network: item.network?.name || 'Red no disponible',
+          mediaType: 'movie',
+        }))
+    } catch (error) {
+      console.error('Error en searchMovies:', error)
       return []
     }
   }
@@ -210,6 +251,7 @@ export class TVDBService {
         genres,
         creators,
         seasons,
+        mediaType: 'series',
       }
     } catch (error) {
       console.error('Error al obtener detalles del show:', error)
@@ -411,10 +453,49 @@ export async function batchSearchTheTVDBExact(titles: string[]): Promise<Movie[]
             overview: first.overview || 'Sin descripción disponible',
             status: first.status?.name || 'Estado desconocido',
             network: first.network?.name || 'Red no disponible',
-          } as Movie
+            mediaType: 'series',
+          } as Movie & { mediaType: 'series' }
         : null;
     } catch (err) {
       console.warn(`Error al buscar "${title}":`, err);
+      return null;
+    }
+  });
+
+  const results = await Promise.all(fetches);
+  return results.filter((item): item is Movie => item !== null);
+}
+
+export async function batchSearchMoviesTheTVDBExact(titles: string[]): Promise<Movie[]> {
+  await TVDBService.authenticate();
+  const fetches = titles.map(async (title) => {
+    try {
+      const response = await tvdbApi.get('/search', {
+        params: {
+          query: title,
+          type: 'movie',
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const data = response.data;
+      const first = data.data?.[0];
+      return first
+        ? {
+            id: first.objectID || first.id,
+            title: first.name,
+            rating: first.score?.toFixed?.(1) ?? first.score ?? '7.9',
+            image: first.image_url || first.image || '/images/placeholder.jpg',
+            year: first.firstAired?.split?.('-')[0] ?? first.year ?? '',
+            overview: first.overview || 'Sin descripción disponible',
+            status: first.status?.name || 'Estado desconocido',
+            network: first.network?.name || 'Red no disponible',
+            mediaType: 'movie',
+          } as Movie & { mediaType: 'movie' }
+        : null;
+    } catch (err) {
+      console.warn(`Error al buscar película "${title}":`, err);
       return null;
     }
   });

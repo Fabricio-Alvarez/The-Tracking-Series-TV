@@ -2,7 +2,7 @@
   <nav class="bottom-nav">
     <a href="#" class="nav-item" :class="{ active: $route.path === '/' }" @click.prevent="clearSearchAndGoHome">
       <ion-icon name="compass-outline"></ion-icon>
-      <span>Explorar</span>
+      <span>Explore</span>
     </a>
 
     <router-link to="/my-shows" class="nav-item" active-class="active">

@@ -828,39 +828,43 @@ function navigateToSeason(seasonNumber: number) {
         </div>
       </section>
       <section class="section">
-        <h3>Next Episode</h3>
-        <div class="next-episode">
-          <div class="next-episode-date">
-            <ion-icon name="calendar-outline" />
-            <span>{{ nextEpisode.date }}</span>
+        <template v-if="show && show.mediaType !== 'movie'">
+          <h3>Next Episode</h3>
+          <div class="next-episode">
+            <div class="next-episode-date">
+              <ion-icon name="calendar-outline" />
+              <span>{{ nextEpisode.date }}</span>
+            </div>
+            <div class="next-episode-info">
+              {{ nextEpisode.code }}, {{ nextEpisode.name }}
+            </div>
           </div>
-          <div class="next-episode-info">
-            {{ nextEpisode.code }}, {{ nextEpisode.name }}
-          </div>
-        </div>
+        </template>
       </section>
       <section class="section">
-        <h3>Seasons</h3>
-        <div class="seasons-list">
-          <div
-            v-for="season in seasons"
-            :key="season.number"
-            class="season-item"
-            @click="navigateToSeason(season.number)"
-          >
-            <input type="checkbox"
-              :checked="isSeasonFullyWatched(season)"
-              @click.stop="toggleSeasonWatched(season)"
-              @change.prevent
-            />
-            <span>Season {{ season.number }}</span>
-            <div class="season-progress">
-              <div class="season-bar" :style="{ width: (getSeasonWatchedCount(season.number)/season.total*100)+'%' }"></div>
+        <template v-if="show && show.mediaType !== 'movie'">
+          <h3>Seasons</h3>
+          <div class="seasons-list">
+            <div
+              v-for="season in seasons"
+              :key="season.number"
+              class="season-item"
+              @click="navigateToSeason(season.number)"
+            >
+              <input type="checkbox"
+                :checked="isSeasonFullyWatched(season)"
+                @click.stop="toggleSeasonWatched(season)"
+                @change.prevent
+              />
+              <span>Season {{ season.number }}</span>
+              <div class="season-progress">
+                <div class="season-bar" :style="{ width: (getSeasonWatchedCount(season.number)/season.total*100)+'%' }"></div>
+              </div>
+              <span>{{ getSeasonWatchedCount(season.number) }}/{{ season.total }}</span>
+              <ion-icon name="chevron-forward-outline" />
             </div>
-            <span>{{ getSeasonWatchedCount(season.number) }}/{{ season.total }}</span>
-            <ion-icon name="chevron-forward-outline" />
           </div>
-        </div>
+        </template>
       </section>
     </template>
   </div>

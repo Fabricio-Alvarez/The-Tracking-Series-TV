@@ -379,14 +379,14 @@ onMounted(async () => {
     <img :src="show.image || '/placeholder-poster.jpg'" alt="Poster" class="poster" />
     <div class="show-meta">
       <span class="netflix">N</span>
-      <span class="type">TV-series</span>
+      <span class="type">{{ show.mediaType === 'movie' ? 'Movie' : 'TV-series' }}</span>
     </div>
     <h1>{{ show.title }}</h1>
     <div class="imdb-row">
       <span class="imdb-badge">IMDb</span>
       <span class="imdb-rating">{{ show.rating || '8.0' }}</span>
       <span class="year">{{ show.year }}</span>
-      <span class="season">{{ displaySeasons }} season{{ displaySeasons === 1 ? '' : 's' }}</span>
+      <span v-if="show.mediaType !== 'movie'" class="season">{{ displaySeasons }} season{{ displaySeasons === 1 ? '' : 's' }}</span>
       <span class="status">{{ displayStatus }}</span>
       <span class="runtime">{{ displayRuntime }}</span>
     </div>

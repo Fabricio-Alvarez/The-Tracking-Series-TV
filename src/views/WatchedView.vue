@@ -1,15 +1,14 @@
 <template>
   <div class="watched-view">
     <div class="watched-header">
-      <h1>Series Vistas</h1>
-      <p>Series que ya has terminado de ver</p>
+      <h1>Watched</h1>
     </div>
 
     <div class="watched-content">
       <div v-if="hasWatched" class="watched-stats">
         <span class="stat-item">
           <span class="stat-number">{{ watched.length }}</span>
-          <span class="stat-label">series vistas</span>
+          <span class="stat-label">en tu lista</span>
         </span>
       </div>
 
@@ -37,19 +36,27 @@
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import MovieCard from '@/components/MovieCard.vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 const showsStore = useShowsStore()
+const route = useRoute()
 
 onBeforeRouteLeave(() => {
   showsStore.setSearchQuery('')
 })
 
 const watched = computed(() => {
-  if (!showsStore.searchQuery) {
-    return showsStore.watched
+  const type = route.query.type || 'series'
+  let list = showsStore.watched
+  if (type === 'series') {
+    list = list.filter(movie => movie.mediaType !== 'movie')
+  } else if (type === 'movies') {
+    list = list.filter(movie => movie.mediaType === 'movie')
   }
-  return showsStore.watched.filter(movie =>
+  if (!showsStore.searchQuery) {
+    return list
+  }
+  return list.filter(movie =>
     movie.title.toLowerCase().includes(showsStore.searchQuery.toLowerCase())
   )
 })

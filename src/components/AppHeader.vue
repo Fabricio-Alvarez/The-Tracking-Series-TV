@@ -16,7 +16,7 @@
               ref="searchInput"
               v-model="searchQuery"
               type="text"
-              placeholder="Buscar series..."
+              placeholder="Search"
               class="search-input"
               :disabled="isLoading"
               @keyup.enter="performSearch"

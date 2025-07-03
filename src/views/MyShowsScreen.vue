@@ -85,14 +85,14 @@
                 <img :src="movie.image" :alt="movie.title" class="watching-card-img" @error="handleImageError" />
                 <div class="watching-card-info">
                   <div class="watching-card-title">{{ movie.title }}</div>
-                  <div class="watching-card-episode">
+                  <div v-if="!(selectedTab === 'movies' && movie.mediaType === 'movie')" class="watching-card-episode">
                     <template v-if="idx === 0">
                       <span class="episode-new">NEW!</span>
                     </template>
                     <span class="episode-code">{{ getLastWatchedEpisodeCode(movie) }}</span>
                     <span class="episode-title">{{ movie.seasons && movie.seasons.length > 0 ? movie.seasons[getSeasonProgress(movie).season-1]?.title || '' : '' }}</span>
                   </div>
-                  <div class="watching-card-progressbar">
+                  <div v-if="!(selectedTab === 'movies' && movie.mediaType === 'movie')" class="watching-card-progressbar">
                     <div class="progress-bar">
                       <div class="progress-bar-fill" :style="{ width: (getSeasonProgress(movie).total > 0 ? (getSeasonProgress(movie).watched / getSeasonProgress(movie).total * 100) : 0) + '%' }"></div>
                     </div>
@@ -131,13 +131,21 @@ onMounted(() => {
   showsStore.setSearchQuery('')
 })
 
-const watchlist = computed(() => showsStore.watchlist)
-const watched = computed(() => showsStore.watched)
-const favorites = computed(() => showsStore.favorites)
-const watching = computed(() => {
-  // Filtrar series que están en watching pero no en watched y revertir la lista
-  return showsStore.watching.filter(movie => !showsStore.isInWatched(movie.id)).slice().reverse()
-})
+const watchlist = computed(() =>
+  showsStore.watchlist.filter(item => selectedTab.value === 'series' ? item.mediaType !== 'movie' : item.mediaType === 'movie')
+)
+const watched = computed(() =>
+  showsStore.watched.filter(item => selectedTab.value === 'series' ? item.mediaType !== 'movie' : item.mediaType === 'movie')
+)
+const favorites = computed(() =>
+  showsStore.favorites.filter(item => selectedTab.value === 'series' ? item.mediaType !== 'movie' : item.mediaType === 'movie')
+)
+const watching = computed(() =>
+  showsStore.watching.filter(item =>
+    (selectedTab.value === 'series' ? item.mediaType !== 'movie' : item.mediaType === 'movie') &&
+    !showsStore.isInWatched(item.id)
+  ).slice().reverse()
+)
 
 const watchlistPreview = computed(() => watchlist.value.slice(0, 4))
 const watchedPreview = computed(() => watched.value.slice(0, 4))
@@ -146,9 +154,7 @@ const favoritesPreview = computed(() => favorites.value.slice(0, 4))
 const selectedTab = ref('series')
 
 function goTo(type: string) {
-  if (type === 'watchlist') router.push({ name: 'watchlist' })
-  if (type === 'watched') router.push({ name: 'watched' })
-  if (type === 'favorites') router.push({ name: 'favorites' })
+  router.push({ name: type, query: { type: selectedTab.value } })
 }
 
 function handleImageError(event: Event) {

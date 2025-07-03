@@ -110,4 +110,11 @@ input {
     padding-bottom: 70px;
   }
 }
+
+/* Ocultar el header cuando se muestra UserLoginForm (usuario no logueado) */
+#app:has(.user-login-form) ~ #app-header,
+#app:has(.user-login-form) #app-header,
+#app .user-login-form ~ #app-header {
+  display: none !important;
+}
 </style>

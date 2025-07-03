@@ -6,7 +6,7 @@
         @input="handleSearch"
         @keyup.enter.prevent
         type="text"
-        placeholder="Buscar series..."
+        placeholder="Search"
         class="search-input"
         :disabled="isLoading"
       />
@@ -39,7 +39,7 @@ const isLoading = computed(() => showsStore.isLoading)
 const searchError = computed(() => showsStore.searchError)
 
 // Debounce para la búsqueda
-let searchTimeout: NodeJS.Timeout | null = null
+let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 const handleSearch = () => {
   showsStore.setSearchQuery(localQuery.value)
@@ -66,10 +66,18 @@ const performSearch = async () => {
     showsStore.setLoading(true)
     showsStore.setSearchError('')
 
-    const results = await TVDBService.searchShows(localQuery.value)
-    showsStore.setSearchResults(results)
+    // Buscar series y películas en paralelo en TheTVDB
+    const [seriesResults, movieResults] = await Promise.all([
+      TVDBService.searchShows(localQuery.value),
+      TVDBService.searchMovies(localQuery.value)
+    ])
+    // Unir y filtrar duplicados por id
+    const allResults = [...seriesResults, ...movieResults].filter((item, index, arr) =>
+      arr.findIndex(i => String(i.id) === String(item.id)) === index
+    )
+    showsStore.setSearchResults(allResults)
   } catch (error) {
-    showsStore.setSearchError('Error al buscar series. Intenta de nuevo.')
+    showsStore.setSearchError('Error al buscar series o películas. Intenta de nuevo.')
     showsStore.setSearchResults([])
   } finally {
     showsStore.setLoading(false)
