@@ -38,14 +38,14 @@ class TursoService {
   }
 
   // Agregar show a lista
-  async addUserShow(userId: string, showId: string, type: UserShow['type']): Promise<void> {
+  async addUserShow(userId: string, showId: string, type: UserShow['type'], mediaType: 'series' | 'movie' = 'series'): Promise<void> {
     const res = await fetch(`${API_BASE}/user-shows`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, showId, type }),
+      body: JSON.stringify({ userId, showId, type, mediaType }),
     });
     if (!res.ok) throw new Error('Error agregando show');
-      }
+  }
 
   // Remover show de lista
   async removeUserShow(userId: string, showId: string, type: UserShow['type']): Promise<void> {
@@ -55,7 +55,7 @@ class TursoService {
       body: JSON.stringify({ userId, showId, type }),
     });
     if (!res.ok) throw new Error('Error removiendo show');
-      }
+  }
 
   // Obtener shows del usuario por tipo
   async getUserShows(userId: string, type?: UserShow['type']): Promise<UserShow[]> {
@@ -70,6 +70,7 @@ class TursoService {
       userId: us.user_id,
       showId: us.show_id,
       type: us.type,
+      mediaType: us.media_type || 'series',
       addedAt: us.added_at,
     }));
   }

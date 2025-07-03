@@ -1,8 +1,12 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Movie } from '@/services/tvdbService'
-import TursoService, { type User } from '@/services/tursoService'
+import TursoService, { type User, type UserShow as TursoUserShow } from '@/services/tursoService'
 import TVDBService from '@/services/tvdbService'
+
+interface UserShow extends TursoUserShow {
+  mediaType: 'series' | 'movie';
+}
 
 export const useShowsStore = defineStore('shows', () => {
   // Estado de búsqueda
@@ -14,10 +18,14 @@ export const useShowsStore = defineStore('shows', () => {
   // Estado del usuario
   const currentUser = ref<User | null>(null)
 
+  // Estado de progreso de series (por showId)
+  const progress = ref<Record<string, { season: number, episode: number }>>({})
+
   // Inicializar el store automáticamente
   const initializeStore = async () => {
     try {
       await loadCurrentUser()
+      await loadProgress()
     } catch (error) {
       console.error('Error inicializando store:', error)
     }
@@ -104,8 +112,8 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      const showId = String(movie.id).replace(/^series-/, '')
-      await TursoService.addUserShow(currentUser.value.id, showId, 'watchlist')
+      const showId = String(movie.id).replace(/^series-/, '').replace(/^movie-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'watchlist', movie.mediaType || 'series')
       if (!watchlist.value.find((m) => m.id === movie.id)) {
         watchlist.value.push(movie)
       }
@@ -159,8 +167,8 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      const showId = String(movie.id).replace(/^series-/, '')
-      await TursoService.addUserShow(currentUser.value.id, showId, 'watched')
+      const showId = String(movie.id).replace(/^series-/, '').replace(/^movie-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'watched', movie.mediaType || 'series')
       if (!watched.value.find((m) => m.id === movie.id)) {
         watched.value.push(movie)
         // Remover de watching si está ahí
@@ -219,8 +227,8 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      const showId = String(movie.id).replace(/^series-/, '')
-      await TursoService.addUserShow(currentUser.value.id, showId, 'favorites')
+      const showId = String(movie.id).replace(/^series-/, '').replace(/^movie-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'favorites', movie.mediaType || 'series')
       if (!favorites.value.find((m) => m.id === movie.id)) {
         favorites.value.push(movie)
       }
@@ -273,8 +281,8 @@ export const useShowsStore = defineStore('shows', () => {
     }
 
     try {
-      const showId = String(movie.id).replace(/^series-/, '')
-      await TursoService.addUserShow(currentUser.value.id, showId, 'watching')
+      const showId = String(movie.id).replace(/^series-/, '').replace(/^movie-/, '')
+      await TursoService.addUserShow(currentUser.value.id, showId, 'watching', movie.mediaType || 'series')
       if (!watching.value.find((m) => m.id === movie.id)) {
         watching.value.push(movie)
         // Remover de watched si está ahí
@@ -331,24 +339,56 @@ export const useShowsStore = defineStore('shows', () => {
       const watchingShows = await TursoService.getUserShows(currentUser.value.id, 'watching')
 
       // 2. Mapear a detalles completos usando TVDBService y filtrar nulls
+      const watchlistShowsTyped = watchlistShows as UserShow[];
+      const watchedShowsTyped = watchedShows as UserShow[];
+      const favoritesShowsTyped = favoritesShows as UserShow[];
+      const watchingShowsTyped = watchingShows as UserShow[];
       watchlist.value = (
         await Promise.all(
-          watchlistShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+          watchlistShowsTyped.map(async (us) => {
+            const id = us.showId
+            if (us.mediaType === 'movie') {
+              return await TVDBService.getMovieDetails(String(id))
+            } else {
+              return await TVDBService.getShowDetails(String(id))
+            }
+          })
         )
       ).filter((m): m is Movie => Boolean(m))
       watched.value = (
         await Promise.all(
-          watchedShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+          watchedShowsTyped.map(async (us) => {
+            const id = us.showId
+            if (us.mediaType === 'movie') {
+              return await TVDBService.getMovieDetails(String(id))
+            } else {
+              return await TVDBService.getShowDetails(String(id))
+            }
+          })
         )
       ).filter((m): m is Movie => Boolean(m))
       favorites.value = (
         await Promise.all(
-          favoritesShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+          favoritesShowsTyped.map(async (us) => {
+            const id = us.showId
+            if (us.mediaType === 'movie') {
+              return await TVDBService.getMovieDetails(String(id))
+            } else {
+              return await TVDBService.getShowDetails(String(id))
+            }
+          })
         )
       ).filter((m): m is Movie => Boolean(m))
       watching.value = (
         await Promise.all(
-          watchingShows.map(async (us) => await TVDBService.getShowDetails(us.showId || us.show_id))
+          watchingShowsTyped.map(async (us) => {
+            const id = us.showId
+            if (us.mediaType === 'movie') {
+              return await TVDBService.getMovieDetails(String(id))
+            } else {
+              return await TVDBService.getShowDetails(String(id))
+            }
+          })
         )
       ).filter((m): m is Movie => Boolean(m))
     } catch (error) {
@@ -404,6 +444,30 @@ export const useShowsStore = defineStore('shows', () => {
     searchResults.value.push(...newShows)
   }
 
+  // Cargar progreso desde localStorage al iniciar
+  function loadProgress() {
+    const stored = localStorage.getItem('progress')
+    if (stored) {
+      progress.value = JSON.parse(stored)
+    }
+  }
+
+  // Guardar progreso en localStorage
+  function saveProgress() {
+    localStorage.setItem('progress', JSON.stringify(progress.value))
+  }
+
+  // Actualizar progreso de una serie
+  function setProgress(showId: string, season: number, episode: number) {
+    progress.value[showId] = { season, episode }
+    saveProgress()
+  }
+
+  // Obtener progreso de una serie
+  function getProgress(showId: string) {
+    return progress.value[showId] || { season: 1, episode: 1 }
+  }
+
   return {
     // Estado
     searchQuery,
@@ -415,6 +479,7 @@ export const useShowsStore = defineStore('shows', () => {
     watched,
     favorites,
     watching,
+    progress,
 
     // Computed
     hasWatchlist,
@@ -461,5 +526,11 @@ export const useShowsStore = defineStore('shows', () => {
     fetchShowById,
 
     addShowsToResults,
+
+    // Métodos de progreso
+    loadProgress,
+    saveProgress,
+    setProgress,
+    getProgress,
   }
 })

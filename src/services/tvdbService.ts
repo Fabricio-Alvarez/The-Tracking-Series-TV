@@ -425,6 +425,61 @@ export class TVDBService {
 
     return []
   }
+
+  /**
+   * Obtener detalles de una película específica
+   */
+  static async getMovieDetails(movieId: string): Promise<Movie | null> {
+    await this.authenticate()
+    try {
+      // 1. Detalles principales
+      const response = await tvdbApi.get(`/movies/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      const movie = response.data.data
+
+      // 2. Géneros
+      let genres: string[] = []
+      if (Array.isArray(movie.genres) && movie.genres.length > 0 && typeof movie.genres[0] !== 'string') {
+        genres = movie.genres.map((g: any) => g.name || g)
+      } else if (Array.isArray(movie.genres) && typeof movie.genres[0] === 'string') {
+        try {
+          const genresResp = await tvdbApi.get('/genres', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+          const genresMap: Record<string, string> = {}
+          for (const g of genresResp.data.data) {
+            genresMap[String(g.id)] = g.name
+          }
+          genres = movie.genres.map((id: string) => genresMap[String(id)] || id)
+        } catch {}
+      } else if (typeof movie.genre === 'string') {
+        genres = [movie.genre]
+      } else if (Array.isArray(movie.tags)) {
+        genres = movie.tags.map((t: any) => t.name || t)
+      }
+
+      return {
+        id: movie.id,
+        title: movie.name,
+        image: movie.image_url || movie.image || '/images/placeholder.jpg',
+        rating: movie.score || '7.9',
+        year: movie.year || (movie.releaseDate?.split?.('-')[0] ?? ''),
+        overview: movie.overview || 'Sin descripción disponible',
+        status: movie.status?.name || 'Estado desconocido',
+        network: movie.network?.name || 'Red no disponible',
+        genres,
+        creators: [],
+        seasons: 1,
+        mediaType: 'movie',
+      }
+    } catch (error) {
+      console.error('Error al obtener detalles de la película:', error)
+      return null
+    }
+  }
 }
 
 // --- FUNCIÓN FUERA DE LA CLASE ---
