@@ -54,11 +54,10 @@ const performSearch = async () => {
   isLoading.value = true
   error.value = ''
   try {
-    const results = await TVDBService.searchShows(searchQuery.value)
+    await showsStore.searchAll(searchQuery.value)
     showsStore.setSearchQuery(searchQuery.value)
-    showsStore.setSearchResults(results)
   } catch (err) {
-    error.value = 'Error al buscar series.'
+    error.value = 'Error al buscar series o películas.'
     showsStore.setSearchResults([])
   } finally {
     isLoading.value = false

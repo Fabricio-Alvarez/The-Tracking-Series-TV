@@ -61,21 +61,10 @@ const handleSearch = () => {
 
 const performSearch = async () => {
   if (!localQuery.value.trim()) return
-
   try {
     showsStore.setLoading(true)
     showsStore.setSearchError('')
-
-    // Buscar series y películas en paralelo en TheTVDB
-    const [seriesResults, movieResults] = await Promise.all([
-      TVDBService.searchShows(localQuery.value),
-      TVDBService.searchMovies(localQuery.value)
-    ])
-    // Unir y filtrar duplicados por id
-    const allResults = [...seriesResults, ...movieResults].filter((item, index, arr) =>
-      arr.findIndex(i => String(i.id) === String(item.id)) === index
-    )
-    showsStore.setSearchResults(allResults)
+    await showsStore.searchAll(localQuery.value)
   } catch (error) {
     showsStore.setSearchError('Error al buscar series o películas. Intenta de nuevo.')
     showsStore.setSearchResults([])

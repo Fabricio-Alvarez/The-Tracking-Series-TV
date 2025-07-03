@@ -468,6 +468,23 @@ export const useShowsStore = defineStore('shows', () => {
     return progress.value[showId] || { season: 1, episode: 1 }
   }
 
+  // Buscar series y películas y combinar resultados
+  async function searchAll(query: string) {
+    try {
+      setLoading(true)
+      setSearchError('')
+      const [series, movies] = await Promise.all([
+        TVDBService.searchShows(query),
+        TVDBService.searchMovies(query)
+      ])
+      searchResults.value = [...series, ...movies]
+    } catch (error: any) {
+      setSearchError('Error en la búsqueda')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return {
     // Estado
     searchQuery,
@@ -532,5 +549,8 @@ export const useShowsStore = defineStore('shows', () => {
     saveProgress,
     setProgress,
     getProgress,
+
+    // Métodos de búsqueda avanzada
+    searchAll,
   }
 })
