@@ -239,6 +239,13 @@ const seriesOverrides: Record<string, {
     status: 'Ended',
     runtime: '22m',
   },
+  '견우와 선녀': {
+    genres: ['Drama', 'Romance', 'Fantasy', 'Historical'],
+    seasons: 1,
+    creators: ['Kim Jong-hak'],
+    status: 'Ended',
+    runtime: '60m',
+  },
 }
 
 const customOverride = computed(() => {

@@ -93,12 +93,12 @@ const recommendedError = ref('')
 const loadPopularShows = async () => {
   isLoadingPopular.value = true
   popularError.value = ''
-  try {
-    popularSeries.value = await batchSearchTheTVDBExact([
-      'Stranger Things', 'The Mandalorian', 'Peaky Blinders', 'The Crown',
-      'Dark', 'The Boys', 'Better Call Saul', 'The Witcher',
-      'Money Heist', 'Ozark', 'Westworld', 'The Office',
-    ])
+      try {
+      popularSeries.value = await batchSearchTheTVDBExact([
+        '견우와 선녀', 'The Mandalorian', 'Peaky Blinders', 'The Crown',
+        'Dark', 'The Boys', 'Better Call Saul', 'The Witcher',
+        'Money Heist', 'Ozark', 'Westworld', 'The Office',
+      ])
     showsStore.addShowsToResults(popularSeries.value)
   } catch (error) {
     popularError.value = 'Error al cargar series populares'

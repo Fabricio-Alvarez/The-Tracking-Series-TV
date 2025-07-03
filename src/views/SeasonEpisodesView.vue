@@ -1774,6 +1774,32 @@ const tedLassoEpisodes: Record<number, any[]> = {
   ]
 }
 
+// Datos de episodios para 견우와 선녀 (The Moon Embracing the Sun)
+const moonEmbracingSunEpisodes: Record<number, any[]> = {
+  1: [
+    { id: 1, name: '해와 달이 함께한 시간', description: 'The young Crown Prince Lee Hwon meets the beautiful Yeon-woo and they fall in love at first sight.', watched: false, airDate: 'January 4, 2012' },
+    { id: 2, name: '달빛 아래서', description: 'Yeon-woo is chosen as the Crown Princess, but political intrigue begins to threaten their love.', watched: false, airDate: 'January 5, 2012' },
+    { id: 3, name: '꿈속에서 만난 사람', description: 'The Crown Prince and Yeon-woo grow closer, but dark forces conspire against them.', watched: false, airDate: 'January 11, 2012' },
+    { id: 4, name: '운명의 시작', description: 'Yeon-woo faces challenges in the palace while the Crown Prince tries to protect her.', watched: false, airDate: 'January 12, 2012' },
+    { id: 5, name: '어둠 속의 빛', description: 'The political situation becomes more dangerous as Yeon-woo\'s position is threatened.', watched: false, airDate: 'January 18, 2012' },
+    { id: 6, name: '잃어버린 시간', description: 'A tragic event changes everything for the Crown Prince and Yeon-woo.', watched: false, airDate: 'January 19, 2012' },
+    { id: 7, name: '새로운 시작', description: 'The Crown Prince is devastated by loss and becomes a cold ruler.', watched: false, airDate: 'January 25, 2012' },
+    { id: 8, name: '기적의 순간', description: 'Years later, a mysterious shaman appears who reminds the King of his lost love.', watched: false, airDate: 'January 26, 2012' },
+    { id: 9, name: '진실의 문', description: 'The King becomes obsessed with the shaman, not knowing her true identity.', watched: false, airDate: 'February 1, 2012' },
+    { id: 10, name: '기억의 조각', description: 'The shaman\'s presence in the palace causes political turmoil.', watched: false, airDate: 'February 2, 2012' },
+    { id: 11, name: '과거의 그림자', description: 'The King begins to suspect the shaman\'s true identity.', watched: false, airDate: 'February 8, 2012' },
+    { id: 12, name: '진실의 빛', description: 'The truth about the shaman\'s past begins to emerge.', watched: false, airDate: 'February 9, 2012' },
+    { id: 13, name: '운명의 선택', description: 'The King confronts the shaman about her identity.', watched: false, airDate: 'February 15, 2012' },
+    { id: 14, name: '기적의 순간', description: 'The shaman\'s true identity is revealed to the King.', watched: false, airDate: 'February 16, 2012' },
+    { id: 15, name: '새로운 희망', description: 'The King and Yeon-woo must navigate the dangerous political landscape.', watched: false, airDate: 'February 22, 2012' },
+    { id: 16, name: '진실의 대가', description: 'The conspiracy against Yeon-woo is revealed.', watched: false, airDate: 'February 23, 2012' },
+    { id: 17, name: '운명의 시간', description: 'The King fights to protect Yeon-woo from her enemies.', watched: false, airDate: 'February 29, 2012' },
+    { id: 18, name: '마지막 선택', description: 'The final confrontation approaches as the truth comes to light.', watched: false, airDate: 'March 1, 2012' },
+    { id: 19, name: '새로운 시작', description: 'The King and Yeon-woo face their greatest challenge yet.', watched: false, airDate: 'March 7, 2012' },
+    { id: 20, name: '해와 달이 함께한 시간', description: 'The series finale brings the story of love and destiny to its conclusion.', watched: false, airDate: 'March 8, 2012' }
+  ]
+}
+
 // Datos de episodios para The Witcher
 const witcherEpisodes: Record<number, any[]> = {
   1: [
@@ -1875,6 +1901,8 @@ async function loadEpisodes() {
         episodes.value = tedLassoEpisodes[seasonNumber] || []
       } else if (showTitleLower.includes('witcher')) {
         episodes.value = witcherEpisodes[seasonNumber] || []
+      } else if (showTitleLower.includes('견우와 선녀') || showTitleLower.includes('moon embracing the sun')) {
+        episodes.value = moonEmbracingSunEpisodes[seasonNumber] || []
       } else {
         // Para otras series, crear episodios genéricos
         episodes.value = Array.from({ length: 10 }, (_, i) => ({
