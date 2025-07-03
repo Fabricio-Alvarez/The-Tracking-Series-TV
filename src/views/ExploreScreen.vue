@@ -108,18 +108,18 @@ const loadPopularShows = async () => {
   try {
     // Lista de 12 películas populares internacionales
     popularSeries.value = await batchSearchMoviesTheTVDBExact([
-      'The Shawshank Redemption',
+      'Titanic',
       'The Godfather',
-      'The Dark Knight',
+      'Inception',
       'Pulp Fiction',
       'Forrest Gump',
-      'Inception',
+      'The Dark Knight',
       'Fight Club',
       'The Matrix',
       'Interstellar',
       'Parasite',
       'Gladiator',
-      'Titanic',
+      'The Substance',
     ])
     showsStore.addShowsToResults(popularSeries.value)
   } catch (error) {
@@ -133,9 +133,9 @@ const loadRecommendedShows = async () => {
   recommendedError.value = ''
   try {
     recommendedSeries.value = await batchSearchTheTVDBExact([
-      'Fleabag', 'The Marvelous Mrs. Maisel', 'Chernobyl', 'Mindhunter',
-      'The Expanse', 'Succession', 'Barry', 'The Leftovers',
-      'Atlanta', 'The Good Place', 'Severance', 'Ted Lasso',
+      'Stranger Things', 'Severance', 'Ted Lasso', 'Mindhunter',
+      'Chernobyl', 'Succession', 'Barry', 'The Leftovers',
+      'Atlanta', 'The Good Place', 'The Marvelous Mrs. Maisel', 'The Expanse',
     ])
     showsStore.addShowsToResults(recommendedSeries.value)
   } catch (error) {
