@@ -34,22 +34,22 @@ import TVDBService from '@/services/tvdbService'
 const showsStore = useShowsStore()
 const localQuery = ref('')
 
-// Computed properties del store
+
 const isLoading = computed(() => showsStore.isLoading)
 const searchError = computed(() => showsStore.searchError)
 
-// Debounce para la búsqueda
+
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 const handleSearch = () => {
   showsStore.setSearchQuery(localQuery.value)
 
-  // Limpiar timeout anterior
+  
   if (searchTimeout) {
     clearTimeout(searchTimeout)
   }
 
-  // Nuevo timeout para debounce
+  
   searchTimeout = setTimeout(() => {
     if (localQuery.value.trim()) {
       performSearch()
@@ -73,7 +73,7 @@ const performSearch = async () => {
   }
 }
 
-// Sincronizar con el store
+
 watch(
   () => showsStore.searchQuery,
   (newQuery) => {

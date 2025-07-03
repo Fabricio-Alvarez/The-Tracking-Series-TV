@@ -66,7 +66,7 @@ const hasWatched = computed(() => showsStore.hasWatched)
 
 <style scoped>
 .watched-view {
-  /* max-width: 1200px; */
+ 
   width: 100%;
   margin: 0 auto;
   padding: 20px;

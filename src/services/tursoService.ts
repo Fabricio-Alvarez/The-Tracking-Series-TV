@@ -18,7 +18,7 @@ export interface UserShow {
 }
 
 class TursoService {
-  // Crear usuario
+  
   async createUser(email: string, name: string): Promise<User> {
     const res = await fetch(`${API_BASE}/users`, {
       method: 'POST',
@@ -29,7 +29,7 @@ class TursoService {
     return await res.json();
   }
 
-  // Obtener usuario por email
+  
   async getUserByEmail(email: string): Promise<User | null> {
     const res = await fetch(`${API_BASE}/users/${encodeURIComponent(email)}`);
     if (res.status === 404) return null;
@@ -37,7 +37,7 @@ class TursoService {
     return await res.json();
   }
 
-  // Agregar show a lista
+  
   async addUserShow(userId: string, showId: string, type: UserShow['type'], mediaType: 'series' | 'movie' = 'series'): Promise<void> {
     const res = await fetch(`${API_BASE}/user-shows`, {
       method: 'POST',
@@ -47,7 +47,7 @@ class TursoService {
     if (!res.ok) throw new Error('Error agregando show');
   }
 
-  // Remover show de lista
+ 
   async removeUserShow(userId: string, showId: string, type: UserShow['type']): Promise<void> {
     const res = await fetch(`${API_BASE}/user-shows`, {
       method: 'DELETE',
@@ -57,14 +57,14 @@ class TursoService {
     if (!res.ok) throw new Error('Error removiendo show');
   }
 
-  // Obtener shows del usuario por tipo
+  
   async getUserShows(userId: string, type?: UserShow['type']): Promise<UserShow[]> {
     let url = `${API_BASE}/user-shows/${userId}`;
     if (type) url += `/${type}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Error obteniendo shows');
     const data = await res.json();
-    // Mapear claves snake_case a camelCase
+   
     return data.map((us: any) => ({
       id: us.id,
       userId: us.user_id,
@@ -75,7 +75,7 @@ class TursoService {
     }));
   }
 
-  // Verificar si un show está en una lista específica
+  
   async isUserShow(userId: string, showId: string, type: UserShow['type']): Promise<boolean> {
     const res = await fetch(`${API_BASE}/user-shows/${userId}/${showId}/${type}`);
     if (!res.ok) throw new Error('Error verificando show');

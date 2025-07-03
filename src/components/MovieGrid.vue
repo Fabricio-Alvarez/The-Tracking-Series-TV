@@ -44,7 +44,7 @@ defineEmits<{
 </script>
 
 <style scoped>
-/* Content header con Selection mode */
+
 .content-header {
   display: flex;
   justify-content: space-between;
@@ -76,7 +76,7 @@ defineEmits<{
   color: inherit;
 }
 
-/* Movie grid */
+
 .movie-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -84,7 +84,7 @@ defineEmits<{
   padding: 0 16px 16px;
 }
 
-/* Responsive */
+
 @media (min-width: 768px) {
   .movie-grid {
     grid-template-columns: repeat(4, 1fr);

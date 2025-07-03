@@ -60,7 +60,7 @@ const props = defineProps<Props>()
 const showsStore = useShowsStore()
 const router = useRouter()
 
-// Computed properties
+
 const truncatedOverview = computed(() => {
   const maxLength = 150
   return props.show.overview && props.show.overview.length > maxLength

@@ -47,7 +47,7 @@ defineEmits<{
 </script>
 
 <style scoped>
-/* Sections horizontales */
+
 .section {
   margin-bottom: 24px;
 }
@@ -92,7 +92,7 @@ defineEmits<{
   width: 120px;
 }
 
-/* Responsive */
+
 @media (min-width: 768px) {
   .movie-list .movie-card {
     width: 160px;

@@ -3,7 +3,7 @@ import { onMounted, computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
 import BottomNavigation from '@/components/BottomNavigation.vue'
 import UserLoginForm from '@/components/UserLoginForm.vue'
-// import DatabaseStatus from '@/components/DatabaseStatus.vue'
+
 
 const showsStore = useShowsStore()
 const isLoggedIn = computed(() => showsStore.currentUser !== null)
@@ -16,7 +16,7 @@ onMounted(async () => {
 
 <template>
   <div id="app">
-    <!-- <DatabaseStatus /> -->
+
     <main class="main-content">
       <UserLoginForm v-if="!isLoggedIn" />
       <router-view v-else />
@@ -36,22 +36,22 @@ onMounted(async () => {
     sans-serif;
   background-color: #121212;
   color: #fff;
-  min-height: calc(100vh - 80px); /* Restar altura del header */
+  min-height: calc(100vh - 80px); 
   display: flex;
   flex-direction: column;
 }
 
 .main-content {
   flex: 1;
-  padding-bottom: 80px; /* Espacio para la navegación inferior */
+  padding-bottom: 80px; 
 }
 
-/* Estilos globales */
+
 * {
   box-sizing: border-box;
 }
 
-/* Scrollbar personalizada */
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -77,13 +77,13 @@ onMounted(async () => {
     border-color 0.2s;
 }
 
-/* Focus visible para accesibilidad */
+
 *:focus-visible {
   outline: 2px solid #6c7ae0;
   outline-offset: 2px;
 }
 
-/* Botones */
+
 button {
   cursor: pointer;
   font-family: inherit;
@@ -93,25 +93,25 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Enlaces */
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Inputs */
+
 input {
   font-family: inherit;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .main-content {
     padding-bottom: 70px;
   }
 }
 
-/* Ocultar el header cuando se muestra UserLoginForm (usuario no logueado) */
+
 #app:has(.user-login-form) ~ #app-header,
 #app:has(.user-login-form) #app-header,
 #app .user-login-form ~ #app-header {

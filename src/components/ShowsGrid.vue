@@ -43,7 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const showsStore = useShowsStore()
 
-// Si no se proporcionan shows, usar los del store
+
 const shows = computed(() => (props.shows.length > 0 ? props.shows : showsStore.searchResults))
 const isLoading = computed(() => props.isLoading || showsStore.isLoading)
 const hasSearched = computed(() => props.hasSearched || showsStore.searchQuery.length > 0)

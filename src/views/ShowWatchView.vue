@@ -669,7 +669,7 @@ const seriesWatchData: Record<string, any> = {
       { number: 1, watched: 10, total: 10 },
     ],
   },
-  // ... Puedes agregar más series aquí siguiendo el mismo formato ...
+ 
 }
 
 const customData = computed(() => {
@@ -677,7 +677,7 @@ const customData = computed(() => {
   return seriesWatchData[key] || null
 })
 
-// --- NUEVO: Progreso real de episodios vistos por temporada ---
+
 function getSeasonWatchedCount(seasonNumber: number): number {
   const storageKey = `episodes_${showId}_season_${seasonNumber}`
   try {
@@ -695,18 +695,18 @@ function isSeasonFullyWatched(season: any): boolean {
 function toggleSeasonWatched(season: any) {
   const storageKey = `episodes_${showId}_season_${season.number}`
   if (isSeasonFullyWatched(season)) {
-    // Desmarcar todos los episodios
+    
     localStorage.setItem(storageKey, JSON.stringify([]))
-    // Actualizar lastWatched a la temporada actual, episodio 1 (o 0)
+
     saveLastWatched(season.number, 1)
   } else {
-    // Marcar todos los episodios
+ 
     const all = Array.from({ length: season.total }, (_, i) => i + 1)
     localStorage.setItem(storageKey, JSON.stringify(all))
-    // Actualizar lastWatched a la temporada actual, último episodio
+  
     saveLastWatched(season.number, season.total)
   }
-  // Forzar actualización reactiva
+ 
   updateSeasonsProgress()
 }
 
@@ -724,7 +724,7 @@ function updateSeasonsProgress() {
   }))
 }
 
-// Actualizar progreso al montar y cuando cambie showId
+
 onMounted(() => {
   fetchData()
   watch(
@@ -753,10 +753,10 @@ async function fetchData() {
     console.log('Loaded cast:', cast.value)
     console.log('Loaded images:', images.value)
   } else {
-    // Intentar cargar datos reales de la API
+   
     await loadRealWatchData()
     
-    // Si no se pudieron cargar datos reales, usar datos genéricos
+   
     if (cast.value.length === 0) {
       cast.value = [
         { name: 'Actor 1', image: '/placeholder-poster.jpg' },

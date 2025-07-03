@@ -7,7 +7,6 @@
       <div v-else-if="showRating" class="movie-rating">{{ movie.rating }}</div>
       <img :src="movie.image" :alt="movie.title" class="movie-image" @error="handleImageError" />
 
-      <!-- Overlay con botones de acción -->
       <div class="movie-overlay">
         <div class="movie-actions">
           <button
@@ -67,7 +66,7 @@ const showsStore = useShowsStore()
 const isLoading = ref(false)
 const router = useRouter()
 
-// Computed properties para verificar estado
+
 const isInWatchlist = computed(() => showsStore.isInWatchlist(props.movie.id))
 const isInWatched = computed(() => showsStore.isInWatched(props.movie.id))
 const isInFavorites = computed(() => showsStore.isInFavorites(props.movie.id))
@@ -79,7 +78,7 @@ const statusIcon = computed(() => {
   return null
 })
 
-// Event handlers
+
 const toggleWatchlist = async () => {
   if (isLoading.value) return
 
@@ -141,10 +140,10 @@ function goToDetail() {
 }
 
 function handleCardClick(event: MouseEvent) {
-  // Si el click fue en un botón de acción, no navegar
+  
   const target = event.target as HTMLElement
   if (target.closest('.action-btn')) return
-  // En móvil, un solo toque/clic abre el detalle
+ 
   if (window.innerWidth <= 768) {
     goToDetail()
   }
@@ -193,7 +192,7 @@ function handleCardClick(event: MouseEvent) {
   z-index: 2;
 }
 
-/* Overlay con botones de acción */
+
 .movie-overlay {
   position: absolute;
   top: 0;
@@ -282,9 +281,9 @@ function handleCardClick(event: MouseEvent) {
   }
 }
 
-/* Icono de status personalizado */
+
 .status-icon ion-icon {
   font-size: 20px;
-  /* Puedes ajustar el tamaño aquí */
+
 }
 </style>

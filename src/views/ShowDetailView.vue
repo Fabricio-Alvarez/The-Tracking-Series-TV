@@ -22,7 +22,7 @@ const isInWatching = computed(() => show.value && showsStore.isInWatching(show.v
 const isLoading = ref(false)
 const enhancedShow = ref<Movie | null>(null)
 
-// Función para cargar datos reales de la API
+
 async function loadRealShowData() {
   if (!show.value) return
   
@@ -32,7 +32,7 @@ async function loadRealShowData() {
     
     if (realShowData) {
       enhancedShow.value = realShowData
-      // Actualizar el store con los datos reales
+      
       showsStore.addShowsToResults([realShowData])
     }
   } catch (error) {
@@ -42,7 +42,7 @@ async function loadRealShowData() {
   }
 }
 
-// Diccionario de overrides para series famosas
+
 const seriesOverrides: Record<string, {
   genres: string[]
   seasons: number
@@ -251,13 +251,13 @@ const seriesOverrides: Record<string, {
 const customOverride = computed(() => {
   if (!show.value) return null
   let key = show.value.title?.toLowerCase()
-  // Mejorar detección para The Office US
+  
   if (key === 'the office' && show.value.year && String(show.value.year).startsWith('2005')) key = 'the office (us)'
   return key && seriesOverrides[key] ? seriesOverrides[key] : null
 })
 
 const displayGenres = computed(() => {
-  // Priorizar datos reales de la API
+
   if (enhancedShow.value?.genres && enhancedShow.value.genres.length > 0) {
     return enhancedShow.value.genres
   }
@@ -266,7 +266,7 @@ const displayGenres = computed(() => {
 })
 
 const displaySeasons = computed(() => {
-  // Priorizar datos reales de la API
+
   if (enhancedShow.value?.seasons) {
     return enhancedShow.value.seasons
   }
@@ -275,7 +275,7 @@ const displaySeasons = computed(() => {
 })
 
 const displayCreators = computed(() => {
-  // Priorizar datos reales de la API
+
   if (enhancedShow.value?.creators && enhancedShow.value.creators.length > 0) {
     return enhancedShow.value.creators
   }
@@ -284,7 +284,7 @@ const displayCreators = computed(() => {
 })
 
 const displayStatus = computed(() => {
-  // Priorizar datos reales de la API
+ 
   if (enhancedShow.value?.status) {
     return enhancedShow.value.status
   }
@@ -342,7 +342,7 @@ async function goToWatch() {
   
   isLoading.value = true
   try {
-    // Si no está en watching, agregarlo primero
+   
     if (!showsStore.isInWatching(show.value.id)) {
       await showsStore.addToWatching(show.value)
     }
@@ -360,7 +360,7 @@ onMounted(async () => {
     if (!loaded) notFound.value = true
   }
   
-  // Cargar datos reales de la API para mejorar la información
+  
   await loadRealShowData()
 })
 </script>

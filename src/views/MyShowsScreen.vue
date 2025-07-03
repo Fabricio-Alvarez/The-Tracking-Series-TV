@@ -192,7 +192,7 @@ function getSeasonProgress(movie: any): ProgressInfo {
     }
   } catch {}
   const season = lastWatched.season || 1
-  // Buscar en localStorage el progreso de episodios vistos para esa temporada
+  
   const storageKey = `episodes_${movie.id}_season_${season}`
   let watchedEpisodes: number[] = []
   try {
@@ -200,10 +200,10 @@ function getSeasonProgress(movie: any): ProgressInfo {
   } catch {
     watchedEpisodes = []
   }
-  // Obtener el total de episodios de la temporada de forma robusta
+ 
   let total = 10
   let seasonsArr = movie.seasons
-  // Si no existe en el objeto, buscar en el mock
+  
   if (!seasonsArr) {
     const key = (movie.title || '').toLowerCase().trim()
     if (seriesWatchData[key]) {
@@ -613,7 +613,7 @@ function goToSummary(movie: any) {
   justify-content: flex-start;
   gap: 8px;
 }
-/* Barra superior de tabs TV Series / Movies */
+
 .myshows-topbar {
   display: flex;
   width: 100vw;

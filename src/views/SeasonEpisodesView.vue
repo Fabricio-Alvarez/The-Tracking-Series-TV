@@ -16,14 +16,14 @@ const showTitle = computed(() => show.value?.title || '')
 const episodes = ref<any[]>([])
 const isLoading = ref(true)
 
-// Computed para calcular el progreso de la temporada
+
 const seasonProgress = computed(() => {
   if (episodes.value.length === 0) return 0
   const watchedCount = episodes.value.filter(ep => ep.watched).length
   return Math.round((watchedCount / episodes.value.length) * 100)
 })
 
-// Datos de episodios para Peaky Blinders (con nombres reales)
+
 const peakyBlindersEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Episode 1", description: "Thomas Shelby returns from World War I with a plan to expand his family's criminal empire.", watched: false, airDate: "September 12, 2013" },
@@ -75,7 +75,7 @@ const peakyBlindersEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Wednesday
+
 const wednesdayEpisodes: Record<number, any[]> = {
   1: [
     {
@@ -137,7 +137,7 @@ const wednesdayEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Stranger Things
+
 const strangerThingsEpisodes: Record<number, any[]> = {
   1: [
     {
@@ -387,7 +387,7 @@ const strangerThingsEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para The Mandalorian
+
 const mandalorianEpisodes: Record<number, any[]> = {
   1: [
     {
@@ -565,7 +565,6 @@ const mandalorianEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para The Crown
 const crownEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Wolferton Splash", description: "The young Queen Elizabeth II faces the challenges of her new role after her father's death.", watched: false, airDate: "November 4, 2016" },
@@ -641,7 +640,7 @@ const crownEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Actualizar Dark con temporadas 2-3
+
 const darkEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Secrets", description: "A child's disappearance sets four families on a frantic hunt for answers as they unearth a mind-bending mystery that spans three generations.", watched: false, airDate: "December 1, 2017" },
@@ -677,7 +676,7 @@ const darkEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Actualizar The Boys con temporadas 2-4
+
 const boysEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "The Name of the Game", description: "Hughie Campbell's life is turned upside down when his girlfriend is killed by a superhero, leading him to join a group of vigilantes.", watched: false, airDate: "July 26, 2019" },
@@ -721,7 +720,7 @@ const boysEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Actualizar Better Call Saul con temporadas 2-6
+
 const betterCallSaulEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Uno", description: "Jimmy McGill struggles to make a living as a public defender while dealing with his brother's law firm.", watched: false, airDate: "February 8, 2015" },
@@ -800,7 +799,7 @@ const betterCallSaulEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Money Heist
+
 const moneyHeistEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Episode 1", description: "Eight thieves take hostages and lock themselves in the Royal Mint of Spain as a criminal mastermind manipulates the police to carry out his plan.", watched: false, airDate: "May 2, 2017" },
@@ -1110,7 +1109,7 @@ const officeEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Succession
+
 const successionEpisodes: Record<number, any[]> = {
   1: [
     {
@@ -1221,7 +1220,7 @@ const successionEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Ozark
+
 const ozarkEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Sugarwood", description: "Financial advisor Marty Byrde relocates his family to the Ozarks after a money-laundering scheme goes wrong.", watched: false, airDate: "July 21, 2017" },
@@ -1277,7 +1276,7 @@ const ozarkEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Westworld
+
 const westworldEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "The Original", description: "In a futuristic theme park, android hosts begin to question their reality and the nature of their existence.", watched: false, airDate: "October 2, 2016" },
@@ -1325,7 +1324,7 @@ const westworldEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Fleabag
+
 const fleabagEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Episode 1", description: "Fleabag navigates her complicated life in London, dealing with family, relationships, and her failing café.", watched: false, airDate: "July 21, 2016" },
@@ -1345,7 +1344,7 @@ const fleabagEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para The Marvelous Mrs. Maisel
+
 const marvelousMrsMaiselEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Pilot", description: "In 1958, Miriam 'Midge' Maisel has a seemingly perfect life until her husband leaves her, leading her to discover her talent for stand-up comedy.", watched: false, airDate: "March 17, 2017" },
@@ -1402,7 +1401,7 @@ const marvelousMrsMaiselEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Chernobyl
+
 const chernobylEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "1:23:45", description: "The Chernobyl nuclear plant explodes, and workers and firefighters risk their lives to contain the disaster.", watched: false, airDate: "May 6, 2019" },
@@ -1413,7 +1412,7 @@ const chernobylEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Mindhunter
+
 const mindhunterEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Episode 1", description: "FBI agents Holden Ford and Bill Tench begin interviewing serial killers to understand their psychology.", watched: false, airDate: "October 13, 2017" },
@@ -1518,7 +1517,7 @@ const expanseEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Barry
+
 const barryEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Chapter One: Make Your Mark", description: "A hitman discovers a passion for acting while on a job in Los Angeles.", watched: false, airDate: "March 25, 2018" },
@@ -1600,7 +1599,7 @@ const leftoversEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Atlanta
+
 const atlantaEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "The Big Bang", description: "Earn tries to help his cousin Alfred, who raps as Paper Boi, navigate the Atlanta music scene.", watched: false, airDate: "September 6, 2016" },
@@ -1653,7 +1652,7 @@ const atlantaEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para The Good Place
+
 const goodPlaceEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Everything Is Fine", description: "Eleanor Shellstrop wakes up in the Good Place and realizes she's been sent there by mistake.", watched: false, airDate: "September 19, 2016" },
@@ -1715,7 +1714,7 @@ const goodPlaceEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Severance
+
 const severanceEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Good News About Hell", description: "Mark Scout begins his new job at Lumon Industries, where employees undergo a procedure called 'severance' to separate their work and personal memories.", watched: false, airDate: "February 18, 2022" },
@@ -1730,7 +1729,7 @@ const severanceEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para Ted Lasso
+
 const tedLassoEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "Pilot", description: "American football coach Ted Lasso is hired to coach a struggling English Premier League soccer team.", watched: false, airDate: "August 14, 2020" },
@@ -1774,7 +1773,7 @@ const tedLassoEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para 견우와 선녀 (The Moon Embracing the Sun)
+
 const moonEmbracingSunEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: '해와 달이 함께한 시간', description: 'The young Crown Prince Lee Hwon meets the beautiful Yeon-woo and they fall in love at first sight.', watched: false, airDate: 'January 4, 2012' },
@@ -1800,7 +1799,7 @@ const moonEmbracingSunEpisodes: Record<number, any[]> = {
   ]
 }
 
-// Datos de episodios para The Witcher
+
 const witcherEpisodes: Record<number, any[]> = {
   1: [
     { id: 1, name: "The End's Beginning", description: "Geralt of Rivia, a monster hunter, struggles to find his place in a world where people often prove more wicked than beasts.", watched: false, airDate: "December 20, 2019" },
@@ -1842,13 +1841,13 @@ async function loadEpisodes() {
   isLoading.value = true
   
   try {
-    // Usar el nuevo servicio de datos reales
+    
     const realEpisodes = await RealDataService.getRealEpisodes(showId, showTitle.value, seasonNumber)
     
     if (realEpisodes.length > 0) {
       episodes.value = realEpisodes
     } else {
-      // Fallback a datos hardcodeados para series específicas
+      
       const showTitleLower = showTitle.value.toLowerCase()
       
       if (showTitleLower.includes('peaky blinders')) {
@@ -1904,7 +1903,7 @@ async function loadEpisodes() {
       } else if (showTitleLower.includes('견우와 선녀') || showTitleLower.includes('moon embracing the sun')) {
         episodes.value = moonEmbracingSunEpisodes[seasonNumber] || []
       } else {
-        // Para otras series, crear episodios genéricos
+      
         episodes.value = Array.from({ length: 10 }, (_, i) => ({
           id: i + 1,
           name: `Episode ${i + 1}`,
@@ -1915,12 +1914,12 @@ async function loadEpisodes() {
       }
     }
     
-    // Cargar estado guardado desde localStorage
+   
     loadWatchedState()
     
   } catch (error) {
     console.error('Error loading episodes:', error)
-    // Fallback a episodios genéricos en caso de error
+
     episodes.value = Array.from({ length: 10 }, (_, i) => ({
       id: i + 1,
       name: `Episode ${i + 1}`,
@@ -1969,9 +1968,9 @@ function toggleWatched(episodeId: number) {
   const episode = episodes.value.find(ep => ep.id === episodeId)
   if (episode) {
     episode.watched = !episode.watched
-    // Guardar estado inmediatamente después de cambiar
+ 
     saveWatchedState()
-    // Guardar el último episodio marcado/desmarcado
+
     saveLastWatched(seasonNumber, episodeId)
   }
 }
