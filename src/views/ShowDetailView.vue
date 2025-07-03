@@ -372,51 +372,115 @@ onMounted(async () => {
   <div v-else-if="notFound">
     <p>No se encontró la serie.</p>
   </div>
-  <div v-else-if="show" class="show-detail">
-    <button class="back-btn" @click="router.back()" title="Regresar">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-    </button>
-    <img :src="show.image || '/placeholder-poster.jpg'" alt="Poster" class="poster" />
-    <div class="show-meta">
-      <span class="netflix">N</span>
-      <span class="type">{{ show.mediaType === 'movie' ? 'Movie' : 'TV-series' }}</span>
-    </div>
-    <h1>{{ show.title }}</h1>
-    <div class="imdb-row">
-      <span class="imdb-badge">IMDb</span>
-      <span class="imdb-rating">{{ show.rating || '8.0' }}</span>
-      <span class="year">{{ show.year }}</span>
-      <span v-if="show.mediaType !== 'movie'" class="season">{{ displaySeasons }} season{{ displaySeasons === 1 ? '' : 's' }}</span>
-      <span class="status">{{ displayStatus }}</span>
-      <span class="runtime">{{ displayRuntime }}</span>
-    </div>
-    <div class="genres genres-grid">
-      <span v-for="genre in displayGenres" :key="genre" class="genre">{{ genre }}</span>
-    </div>
-    <p class="description">{{ show.overview }}</p>
-    <p class="creators">Creadores: <span>{{ displayCreators.length > 0 ? displayCreators.join(', ') : 'No disponible' }}</span></p>
-    <button class="start-watching-btn" :disabled="isLoading" @click="goToWatch">
-      <ion-icon name="eye-outline" class="icon-main"></ion-icon>
-      {{ isInWatching ? 'Watching' : 'Start watching' }}
-    </button>
-    <div class="actions">
-      <button :class="['action-btn', { active: isInWatchlist }]" @click="handleWatchlist" :disabled="isLoading">
-        <ion-icon name="bookmark-outline" class="icon-action"></ion-icon>
-        <span>Agregar a Watchlist</span>
+  <div v-else-if="show" class="detail-container">
+    <img :src="show.image || '/placeholder-poster.jpg'" alt="Poster" class="detail-poster" />
+    <div class="detail-content">
+      <button class="back-btn" @click="router.back()" title="Regresar">
+        <ion-icon name="arrow-back-outline"></ion-icon>
       </button>
-      <button :class="['action-btn', { active: isInWatched }]" @click="handleWatched" :disabled="isLoading">
-        <ion-icon name="checkmark-circle-outline" class="icon-action"></ion-icon>
-        <span>Marcar como Watched</span>
+      <div class="show-meta">
+        <span class="netflix">N</span>
+        <span class="type">{{ show.mediaType === 'movie' ? 'Movie' : 'TV-series' }}</span>
+      </div>
+      <h1>{{ show.title }}</h1>
+      <div class="imdb-row">
+        <span class="imdb-badge">IMDb</span>
+        <span class="imdb-rating">{{ show.rating || '8.0' }}</span>
+        <span class="year">{{ show.year }}</span>
+        <span v-if="show.mediaType !== 'movie'" class="season">{{ displaySeasons }} season{{ displaySeasons === 1 ? '' : 's' }}</span>
+        <span class="status">{{ displayStatus }}</span>
+        <span class="runtime">{{ displayRuntime }}</span>
+      </div>
+      <div class="genres genres-grid">
+        <span v-for="genre in displayGenres" :key="genre" class="genre">{{ genre }}</span>
+      </div>
+      <p class="description">{{ show.overview }}</p>
+      <p class="creators">Creadores: <span>{{ displayCreators.length > 0 ? displayCreators.join(', ') : 'No disponible' }}</span></p>
+      <button class="start-watching-btn" :disabled="isLoading" @click="goToWatch">
+        <ion-icon name="eye-outline" class="icon-main"></ion-icon>
+        {{ isInWatching ? 'Watching' : 'Start watching' }}
       </button>
-      <button :class="['action-btn', { active: isInFavorites }]" @click="handleFavorites" :disabled="isLoading">
-        <ion-icon name="star-outline" class="icon-action"></ion-icon>
-        <span>Agregar a Favorites</span>
-      </button>
+      <div class="actions">
+        <button :class="['action-btn', { active: isInWatchlist }]" @click="handleWatchlist" :disabled="isLoading">
+          <ion-icon name="bookmark-outline" class="icon-action"></ion-icon>
+          <span>Agregar a Watchlist</span>
+        </button>
+        <button :class="['action-btn', { active: isInWatched }]" @click="handleWatched" :disabled="isLoading">
+          <ion-icon name="checkmark-circle-outline" class="icon-action"></ion-icon>
+          <span>Marcar como Watched</span>
+        </button>
+        <button :class="['action-btn', { active: isInFavorites }]" @click="handleFavorites" :disabled="isLoading">
+          <ion-icon name="star-outline" class="icon-action"></ion-icon>
+          <span>Agregar a Favorites</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.detail-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 32px 16px 16px 16px;
+  box-sizing: border-box;
+}
+
+.detail-poster {
+  width: 100%;
+  max-width: 350px;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  margin-bottom: 24px;
+}
+
+.detail-content {
+  width: 100%;
+  max-width: 500px;
+  background: #181818;
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  margin-bottom: 32px;
+  color: #fff;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .detail-container {
+    padding: 16px 4px 8px 4px;
+  }
+  .detail-content {
+    padding: 16px 8px;
+    max-width: 100%;
+  }
+  .detail-poster {
+    max-width: 90vw;
+  }
+}
+
+@media (min-width: 900px) {
+  .detail-container {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 0;
+  }
+  .detail-poster {
+    margin-right: 48px;
+    margin-bottom: 0;
+    max-width: 400px;
+  }
+  .detail-content {
+    text-align: left;
+    max-width: 600px;
+    margin-bottom: 0;
+  }
+}
+
 .show-detail {
   background: #181a20;
   color: #fff;

@@ -797,80 +797,93 @@ function navigateToSeason(seasonNumber: number) {
 </script>
 
 <template>
-  <div class="watch-view">
-    <button class="back-btn" @click="router.back()" title="Regresar">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-    </button>
-    <div v-if="isLoading" class="loading">Cargando...</div>
-    <template v-else>
-      <section class="section">
-        <h3>Cast</h3>
-        <div class="cast-list">
-          <div v-for="actor in cast" :key="actor.id" class="cast-item">
-            <img :src="actor.image" :alt="actor.name" class="cast-img" />
-            <div class="cast-name">{{ actor.name }}</div>
-          </div>
-        </div>
-      </section>
-      <section class="section">
-        <h3>Trailers</h3>
-        <div class="trailers-list">
-          <div v-for="trailer in trailers" :key="trailer.url" class="trailer-item">
-            <img :src="trailer.image" class="trailer-img" />
-            <div class="trailer-play"><ion-icon name="play-circle" /></div>
-          </div>
-        </div>
-      </section>
-      <section class="section">
-        <h3>Images</h3>
-        <div class="images-list">
-          <img v-for="img in images" :key="img" :src="img" class="image-item" />
-        </div>
-      </section>
-      <section class="section">
-        <template v-if="show && show.mediaType !== 'movie'">
-          <h3>Next Episode</h3>
-          <div class="next-episode">
-            <div class="next-episode-date">
-              <ion-icon name="calendar-outline" />
-              <span>{{ nextEpisode.date }}</span>
-            </div>
-            <div class="next-episode-info">
-              {{ nextEpisode.code }}, {{ nextEpisode.name }}
+  <div class="watch-view-container">
+    <div class="watch-view">
+      <button class="back-btn" @click="router.back()" title="Regresar">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div v-if="isLoading" class="loading">Cargando...</div>
+      <template v-else>
+        <section class="section">
+          <h3>Cast</h3>
+          <div class="cast-list">
+            <div v-for="actor in cast" :key="actor.id" class="cast-item">
+              <img :src="actor.image" :alt="actor.name" class="cast-img" />
+              <div class="cast-name">{{ actor.name }}</div>
             </div>
           </div>
-        </template>
-      </section>
-      <section class="section">
-        <template v-if="show && show.mediaType !== 'movie'">
-          <h3>Seasons</h3>
-          <div class="seasons-list">
-            <div
-              v-for="season in seasons"
-              :key="season.number"
-              class="season-item"
-              @click="navigateToSeason(season.number)"
-            >
-              <input type="checkbox"
-                :checked="isSeasonFullyWatched(season)"
-                @click.stop="toggleSeasonWatched(season)"
-                @change.prevent
-              />
-              <span>Season {{ season.number }}</span>
-              <div class="season-progress">
-                <div class="season-bar" :style="{ width: (getSeasonWatchedCount(season.number)/season.total*100)+'%' }"></div>
+        </section>
+        <section class="section">
+          <h3>Trailers</h3>
+          <div class="trailers-list">
+            <div v-for="trailer in trailers" :key="trailer.url" class="trailer-item">
+              <img :src="trailer.image" class="trailer-img" />
+              <div class="trailer-play"><ion-icon name="play-circle" /></div>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <h3>Images</h3>
+          <div class="images-list">
+            <img v-for="img in images" :key="img" :src="img" class="image-item" />
+          </div>
+        </section>
+        <section class="section">
+          <template v-if="show && show.mediaType !== 'movie'">
+            <h3>Next Episode</h3>
+            <div class="next-episode">
+              <div class="next-episode-date">
+                <ion-icon name="calendar-outline" />
+                <span>{{ nextEpisode.date }}</span>
               </div>
-              <span>{{ getSeasonWatchedCount(season.number) }}/{{ season.total }}</span>
-              <ion-icon name="chevron-forward-outline" />
+              <div class="next-episode-info">
+                {{ nextEpisode.code }}, {{ nextEpisode.name }}
+              </div>
             </div>
-          </div>
-        </template>
-      </section>
-    </template>
+          </template>
+        </section>
+        <section class="section">
+          <template v-if="show && show.mediaType !== 'movie'">
+            <h3>Seasons</h3>
+            <div class="seasons-list">
+              <div
+                v-for="season in seasons"
+                :key="season.number"
+                class="season-item"
+                @click="navigateToSeason(season.number)"
+              >
+                <input type="checkbox"
+                  :checked="isSeasonFullyWatched(season)"
+                  @click.stop="toggleSeasonWatched(season)"
+                  @change.prevent
+                />
+                <span>Season {{ season.number }}</span>
+                <div class="season-progress">
+                  <div class="season-bar" :style="{ width: (getSeasonWatchedCount(season.number)/season.total*100)+'%' }"></div>
+                </div>
+                <span>{{ getSeasonWatchedCount(season.number) }}/{{ season.total }}</span>
+                <ion-icon name="chevron-forward-outline" />
+              </div>
+            </div>
+          </template>
+        </section>
+      </template>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.watch-view-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 32px 16px 16px 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .watch-view {
   background: #181a20;
   color: #fff;
@@ -880,7 +893,19 @@ function navigateToSeason(seasonNumber: number) {
   margin: 2rem auto;
   position: relative;
   padding-top: 44px;
+  width: 100%;
 }
+
+@media (min-width: 900px) {
+  .watch-view {
+    max-width: 700px;
+    padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+  }
+  .watch-view-container {
+    padding: 48px 0;
+  }
+}
+
 /* Botón de regreso circular */
 .back-btn {
   position: absolute;
