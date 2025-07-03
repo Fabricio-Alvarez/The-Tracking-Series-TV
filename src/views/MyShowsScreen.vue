@@ -90,7 +90,7 @@
                       <span class="episode-new">NEW!</span>
                     </template>
                     <span class="episode-code">{{ getLastWatchedEpisodeCode(movie) }}</span>
-                    <span class="episode-title">{{ movie.seasons && movie.seasons.length > 0 ? movie.seasons[getSeasonProgress(movie).season-1]?.title || '' : '' }}</span>
+                    <span class="episode-title">{{ movie.seasons && Array.isArray(movie.seasons) && movie.seasons.length > 0 ? movie.seasons[getSeasonProgress(movie).season-1]?.title || '' : '' }}</span>
                   </div>
                   <div v-if="!(selectedTab === 'movies' && movie.mediaType === 'movie')" class="watching-card-progressbar">
                     <div class="progress-bar">

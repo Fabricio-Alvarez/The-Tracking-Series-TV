@@ -1,11 +1,9 @@
 import axios from 'axios'
 
-// Configuración de la API de TheTVDB
 const TVDB_BASE_URL = 'https://api4.thetvdb.com/v4'
 const TVDB_API_KEY = '249d19f5-13f4-4fb7-bebb-15e631a2b67a'
 console.log('API KEY utilizada:', TVDB_API_KEY)
 
-// Instancia de axios configurada
 const tvdbApi = axios.create({
   baseURL: TVDB_BASE_URL,
   headers: {
@@ -13,10 +11,8 @@ const tvdbApi = axios.create({
   },
 })
 
-// Token de acceso
 let accessToken: string | null = null
 
-// Interceptor para manejar errores
 tvdbApi.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -67,15 +63,13 @@ export class TVDBService {
    * Autenticarse con TheTVDB API y guardar el token
    */
   public static async authenticate(): Promise<void> {
-    if (accessToken) return // Ya tenemos un token válido
-
+    if (accessToken) return
     try {
       console.log('🔐 Autenticando con TheTVDB...')
       const response = await tvdbApi.post('/login', {
         apikey: TVDB_API_KEY,
       })
       accessToken = response.data.data.token
-      // Actualizar el header de autorización para futuras peticiones
       tvdbApi.defaults.headers.Authorization = `Bearer ${accessToken}`
       console.log('✅ Autenticación exitosa')
     } catch (error) {
@@ -83,10 +77,6 @@ export class TVDBService {
       throw new Error('Error de autenticación con TheTVDB API')
     }
   }
-
-  /**
-   * Buscar series por nombre
-   */
   static async searchShows(query: string): Promise<Movie[]> {
     await this.authenticate()
     try {
@@ -103,7 +93,6 @@ export class TVDBService {
       if (!data.data || !Array.isArray(data.data)) {
         return []
       }
-      // Adaptar la estructura de los resultados
       return data.data
         .filter((item: any) => item?.objectID || item?.id)
         .map((item: any) => ({
@@ -122,10 +111,6 @@ export class TVDBService {
       return []
     }
   }
-
-  /**
-   * Buscar películas por nombre
-   */
   static async searchMovies(query: string): Promise<Movie[]> {
     await this.authenticate()
     try {
@@ -142,7 +127,6 @@ export class TVDBService {
       if (!data.data || !Array.isArray(data.data)) {
         return []
       }
-      // Adaptar la estructura de los resultados
       return data.data
         .filter((item: any) => item?.objectID || item?.id)
         .map((item: any) => ({
@@ -161,28 +145,19 @@ export class TVDBService {
       return []
     }
   }
-
-  /**
-   * Obtener detalles de una serie específica
-   */
   static async getShowDetails(showId: string): Promise<Movie | null> {
     await this.authenticate()
     try {
-      // 1. Detalles principales
       const response = await tvdbApi.get(`/series/${showId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       const show = response.data.data
-
-      // 2. Géneros: si vienen como IDs, obtener nombres
       let genres: string[] = []
       if (Array.isArray(show.genres) && show.genres.length > 0 && typeof show.genres[0] !== 'string') {
-        // Si son objetos
         genres = show.genres.map((g: any) => g.name || g)
       } else if (Array.isArray(show.genres) && typeof show.genres[0] === 'string') {
-        // Si son IDs, buscar nombres
         try {
           const genresResp = await tvdbApi.get('/genres', {
             headers: { Authorization: `Bearer ${accessToken}` },
@@ -199,7 +174,6 @@ export class TVDBService {
         genres = show.tags.map((t: any) => t.name || t)
       }
 
-      // 3. Creadores: llamada a /series/{id}/people
       let creators: string[] = []
       try {
         const peopleResp = await tvdbApi.get(`/series/${showId}/people`, {
@@ -207,12 +181,10 @@ export class TVDBService {
         })
         const people = peopleResp.data.data || []
         creators = people.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('creator')).map((p: any) => p.name)
-        // Fallback: si no hay creadores, usar escritores principales
         if (creators.length === 0) {
           creators = people.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('writer')).map((p: any) => p.name)
         }
       } catch {}
-      // Fallbacks adicionales
       if (creators.length === 0 && Array.isArray(show.people)) {
         creators = show.people.filter((p: any) => (p.type || p.role || '').toLowerCase().includes('creator')).map((p: any) => p.name)
       } else if (creators.length === 0 && Array.isArray(show.seriesPeople)) {
@@ -221,7 +193,6 @@ export class TVDBService {
         creators = show.createdBy.map((c: any) => c.name || c)
       }
 
-      // 4. Temporadas: llamada a /series/{id}/seasons
       let seasons = 1
       try {
         const seasonsResp = await tvdbApi.get(`/series/${showId}/seasons`, {
@@ -231,7 +202,6 @@ export class TVDBService {
           seasons = seasonsResp.data.data.length
         }
       } catch {
-        // Fallbacks
         if (Array.isArray(show.seasons)) {
           seasons = show.seasons.length
         } else if (show.seasonsCount) {
@@ -258,10 +228,6 @@ export class TVDBService {
       return null
     }
   }
-
-  /**
-   * Obtener temporadas de una serie
-   */
   static async getSeasons(showId: string): Promise<Season[]> {
     await this.authenticate()
     try {
@@ -286,10 +252,6 @@ export class TVDBService {
       return []
     }
   }
-
-  /**
-   * Obtener episodios de una temporada específica
-   */
   static async getEpisodes(showId: string, seasonNumber: number): Promise<Episode[]> {
     await this.authenticate()
     try {
@@ -307,7 +269,7 @@ export class TVDBService {
         id: episode.id,
         name: episode.name || `Episodio ${episode.number}`,
         description: episode.overview || episode.description || 'Sin descripción disponible',
-        watched: false, // Se maneja localmente
+        watched: false,
         airDate: episode.airDate || episode.firstAired || 'TBA',
         seasonNumber: episode.seasonNumber || seasonNumber,
         episodeNumber: episode.number,
@@ -319,17 +281,11 @@ export class TVDBService {
       return []
     }
   }
-
-  /**
-   * Obtener todas las temporadas y episodios de una serie
-   */
   static async getAllSeasonsAndEpisodes(showId: string): Promise<Record<number, Episode[]>> {
     await this.authenticate()
     try {
-      // Primero obtener todas las temporadas
       const seasons = await this.getSeasons(showId)
       
-      // Luego obtener episodios para cada temporada
       const episodesBySeason: Record<number, Episode[]> = {}
       
       for (const season of seasons) {
@@ -345,13 +301,9 @@ export class TVDBService {
   }
 
 
-  /**
-   * Obtener imágenes específicas para series populares
-   */
   static async getSpecificShowImages(showTitle: string): Promise<string[]> {
     const title = showTitle.toLowerCase()
     
-    // Mapeo de series populares con URLs de imágenes específicas
     const specificImages: Record<string, string[]> = {
       'wednesday': [
         'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/WednesdayNetflixPosterEnglish.jpg/1200px-WednesdayNetflixPosterEnglish.jpg',
@@ -415,7 +367,6 @@ export class TVDBService {
       ]
     }
 
-    // Buscar coincidencias exactas o parciales
     for (const [key, images] of Object.entries(specificImages)) {
       if (title.includes(key) || key.includes(title)) {
         console.log(`Imágenes específicas encontradas para: ${showTitle}`)
@@ -426,13 +377,9 @@ export class TVDBService {
     return []
   }
 
-  /**
-   * Obtener detalles de una película específica
-   */
   static async getMovieDetails(movieId: string): Promise<Movie | null> {
     await this.authenticate()
     try {
-      // 1. Detalles principales
       const response = await tvdbApi.get(`/movies/${movieId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -440,7 +387,6 @@ export class TVDBService {
       })
       const movie = response.data.data
 
-      // 2. Géneros
       let genres: string[] = []
       if (Array.isArray(movie.genres) && movie.genres.length > 0 && typeof movie.genres[0] !== 'string') {
         genres = movie.genres.map((g: any) => g.name || g)
@@ -482,7 +428,6 @@ export class TVDBService {
   }
 }
 
-// --- FUNCIÓN FUERA DE LA CLASE ---
 export async function batchSearchTheTVDBExact(titles: string[]): Promise<Movie[]> {
   await TVDBService.authenticate();
   const fetches = titles.map(async (title) => {
@@ -559,9 +504,7 @@ export async function batchSearchMoviesTheTVDBExact(titles: string[]): Promise<M
   return results.filter((item): item is Movie => item !== null);
 }
 
-// --- MÉTODOS MOCK PARA VISTA WATCH ---
 export async function getSeriesPeopleMock(showId: string) {
-  // Puedes personalizar según showId si quieres
   return [
     { id: 1, name: 'Jenna Ortega', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064746.jpg' },
     { id: 2, name: 'Hunter Doohan', image: 'https://static.tvmaze.com/uploads/images/medium_portrait/425/1064747.jpg' },
@@ -581,29 +524,21 @@ export async function getSeriesImagesMock(showId: string) {
 
 export default TVDBService
 
-// --- SERVICIO DE DATOS REALES COMBINADOS ---
 export class RealDataService {
-  // Cache para evitar llamadas repetidas a la API
   private static episodeCache: Record<string, Episode[]> = {}
   private static seasonCache: Record<string, Season[]> = {}
 
-  /**
-   * Obtener episodios reales combinando API y datos externos
-   */
   static async getRealEpisodes(showId: string, showTitle: string, seasonNumber: number): Promise<Episode[]> {
     const cacheKey = `${showId}_${seasonNumber}`
     
-    // Verificar cache primero
     if (this.episodeCache[cacheKey]) {
       return this.episodeCache[cacheKey]
     }
 
     try {
-      // Intentar obtener de la API primero
       const apiEpisodes = await TVDBService.getEpisodes(showId, seasonNumber)
       
       if (apiEpisodes.length > 0) {
-        // Si la API tiene datos, usarlos
         this.episodeCache[cacheKey] = apiEpisodes
         return apiEpisodes
       }
@@ -611,19 +546,14 @@ export class RealDataService {
       console.log(`API no tiene datos para ${showTitle} temporada ${seasonNumber}, usando datos externos`)
     }
 
-    // Si la API no tiene datos, usar datos externos
     const externalEpisodes = await this.getExternalEpisodes(showTitle, seasonNumber)
     this.episodeCache[cacheKey] = externalEpisodes
     return externalEpisodes
   }
 
-  /**
-   * Obtener episodios de fuentes externas (TMDB, Wikipedia, etc.)
-   */
   private static async getExternalEpisodes(showTitle: string, seasonNumber: number): Promise<Episode[]> {
     const showTitleLower = showTitle.toLowerCase()
     
-    // Intentar obtener de TMDB API (gratuita)
     try {
       const tmdbEpisodes = await this.getTMDBEpisodes(showTitle, seasonNumber)
       if (tmdbEpisodes.length > 0) {
@@ -633,26 +563,19 @@ export class RealDataService {
       console.log('Error obteniendo datos de TMDB:', error)
     }
 
-    // Fallback a datos hardcodeados para series populares
     const hardcodedEpisodes = this.getHardcodedEpisodes(showTitleLower, seasonNumber)
     if (hardcodedEpisodes.length > 0) {
       return hardcodedEpisodes
     }
 
-    // Último fallback: episodios genéricos
     return this.generateGenericEpisodes(showTitle, seasonNumber)
   }
 
-  /**
-   * Obtener episodios de TMDB API
-   */
   private static async getTMDBEpisodes(showTitle: string, seasonNumber: number): Promise<Episode[]> {
-    // TMDB API es gratuita y tiene muchos datos
-    const TMDB_API_KEY = '8c247ea0b4b56ed2ff7d41c9a833aa77' // API key pública de ejemplo
+    const TMDB_API_KEY = '8c247ea0b4b56ed2ff7d41c9a833aa77'
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
     
     try {
-      // 1. Buscar la serie
       const searchResponse = await fetch(
         `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(showTitle)}`
       )
@@ -664,7 +587,6 @@ export class RealDataService {
       
       const showId = searchData.results[0].id
       
-      // 2. Obtener episodios de la temporada
       const episodesResponse = await fetch(
         `${TMDB_BASE_URL}/tv/${showId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}`
       )
@@ -691,11 +613,7 @@ export class RealDataService {
     }
   }
 
-  /**
-   * Datos hardcodeados para series populares que no están en la API
-   */
   private static getHardcodedEpisodes(showTitle: string, seasonNumber: number): Episode[] {
-    // Aquí puedes agregar más series con datos reales
     const hardcodedData: Record<string, Record<number, Episode[]>> = {
       'breaking bad': {
         1: [
@@ -742,11 +660,7 @@ export class RealDataService {
     return hardcodedData[showTitle]?.[seasonNumber] || []
   }
 
-  /**
-   * Generar episodios genéricos como último recurso
-   */
   private static generateGenericEpisodes(showTitle: string, seasonNumber: number): Episode[] {
-    // Generar 10 episodios genéricos
     return Array.from({ length: 10 }, (_, i) => ({
       id: i + 1,
       name: `Episodio ${i + 1}`,
@@ -758,21 +672,14 @@ export class RealDataService {
     }))
   }
 
-  /**
-   * Limpiar cache
-   */
   static clearCache() {
     this.episodeCache = {}
     this.seasonCache = {}
   }
 
-  /**
-   * Obtener imágenes reales combinando múltiples fuentes
-   */
   static async getRealImages(showId: string, showTitle: string): Promise<string[]> {
     console.log('Obteniendo imágenes reales para:', showTitle)
     
-    // 1. Intentar obtener imágenes específicas para series populares
     try {
       const specificImages = await RealDataService.getSpecificShowImages(showTitle)
       if (specificImages.length > 0) {
@@ -783,7 +690,6 @@ export class RealDataService {
       console.log('No se pudieron obtener imágenes específicas')
     }
 
-    // 2. Intentar obtener de TheTVDB
     try {
       const tvdbImages = await RealDataService.getShowImages(showId)
       if (tvdbImages.length > 0) {
@@ -794,7 +700,6 @@ export class RealDataService {
       console.log('No se pudieron obtener imágenes de TheTVDB')
     }
 
-    // 3. Fallback a TMDB
     try {
       const tmdbImages = await RealDataService.getTMDBImages(showTitle)
       if (tmdbImages.length > 0) {
@@ -805,7 +710,6 @@ export class RealDataService {
       console.log('No se pudieron obtener imágenes de TMDB')
     }
 
-    // 4. Último fallback: imágenes genéricas
     console.log('Usando imágenes genéricas')
     return [
       'https://via.placeholder.com/300x450/333/fff?text=No+Image',
@@ -814,12 +718,8 @@ export class RealDataService {
     ]
   }
 
-  /**
-   * Obtener cast real combinando múltiples fuentes
-   */
   static async getRealCast(showId: string, showTitle: string): Promise<Array<{name: string, image: string}>> {
     try {
-      // Intentar obtener de TheTVDB primero
       const tvdbCast = await RealDataService.getShowCast(showId)
       if (tvdbCast.length > 0) {
         return tvdbCast
@@ -828,7 +728,6 @@ export class RealDataService {
       console.log('No se pudo obtener cast de TheTVDB')
     }
 
-    // Fallback a TMDB
     try {
       const tmdbCast = await RealDataService.getTMDBCast(showTitle)
       if (tmdbCast.length > 0) {
@@ -838,7 +737,6 @@ export class RealDataService {
       console.log('No se pudo obtener cast de TMDB')
     }
 
-    // Último fallback: cast genérico
     return [
       { name: 'Actor 1', image: 'https://via.placeholder.com/150x200/333/fff?text=A' },
       { name: 'Actor 2', image: 'https://via.placeholder.com/150x200/333/fff?text=B' },
@@ -848,9 +746,6 @@ export class RealDataService {
     ]
   }
 
-  /**
-   * Obtener imágenes reales de una serie
-   */
   static async getShowImages(showId: string): Promise<string[]> {
     await TVDBService.authenticate()
     try {
@@ -863,23 +758,20 @@ export class RealDataService {
       const images = response.data.data || []
       console.log('Imágenes obtenidas de TheTVDB:', images.length)
       
-      // Filtrar y ordenar por tipo de imagen
       const filteredImages = images
         .filter((img: any) => {
           const type = img.type?.toLowerCase()
           return type === 'poster' || type === 'fanart' || type === 'banner' || type === 'screenshot'
         })
         .sort((a: any, b: any) => {
-          // Priorizar posters y fanart
           const typeA = a.type?.toLowerCase()
           const typeB = b.type?.toLowerCase()
           if (typeA === 'poster' && typeB !== 'poster') return -1
           if (typeA === 'fanart' && typeB !== 'poster' && typeB !== 'fanart') return -1
           return 0
         })
-        .slice(0, 8) // Tomar más imágenes para tener opciones
+        .slice(0, 8)
         .map((img: any) => {
-          // Construir URL completa si es necesario
           let imageUrl = img.image_url || img.url
           if (imageUrl && !imageUrl.startsWith('http')) {
             imageUrl = `https://artworks.thetvdb.com${imageUrl}`
@@ -896,9 +788,6 @@ export class RealDataService {
     }
   }
 
-  /**
-   * Obtener cast real de una serie
-   */
   static async getShowCast(showId: string): Promise<Array<{name: string, image: string}>> {
     await TVDBService.authenticate()
     try {
@@ -921,7 +810,7 @@ export class RealDataService {
                  role.includes('main') ||
                  role.includes('lead')
         })
-        .slice(0, 8) // Tomar más personas para tener opciones
+        .slice(0, 8)
         .map((person: any) => {
           let imageUrl = person.image_url || person.image
           if (imageUrl && !imageUrl.startsWith('http')) {
@@ -935,16 +824,13 @@ export class RealDataService {
         .filter((person: any) => person.name && person.name.trim() !== '')
       
       console.log('Cast filtrado:', cast.length)
-      return cast.slice(0, 5) // Retornar solo los primeros 5
+      return cast.slice(0, 5)
     } catch (error) {
       console.error('Error al obtener cast de la serie:', error)
       return []
     }
   }
 
-  /**
-   * Obtener imágenes de TMDB como fallback
-   */
   static async getTMDBImages(showTitle: string): Promise<string[]> {
     const TMDB_API_KEY = '8c247ea0b4b56ed2ff7d41c9a833aa77'
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
@@ -952,7 +838,6 @@ export class RealDataService {
     try {
       console.log('Buscando serie en TMDB:', showTitle)
       
-      // 1. Buscar la serie
       const searchResponse = await fetch(
         `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(showTitle)}`
       )
@@ -966,7 +851,6 @@ export class RealDataService {
       const showId = searchData.results[0].id
       console.log('ID de serie encontrado en TMDB:', showId)
       
-      // 2. Obtener imágenes
       const imagesResponse = await fetch(
         `${TMDB_BASE_URL}/tv/${showId}/images?api_key=${TMDB_API_KEY}`
       )
@@ -974,26 +858,22 @@ export class RealDataService {
       
       const images: string[] = []
       
-      // Agregar poster principal
       if (imagesData.poster_path) {
         images.push(`https://image.tmdb.org/t/p/w500${imagesData.poster_path}`)
       }
       
-      // Agregar posters adicionales
       if (imagesData.posters) {
         images.push(...imagesData.posters.slice(0, 2).map((img: any) => 
           `https://image.tmdb.org/t/p/w500${img.file_path}`
         ))
       }
       
-      // Agregar backdrops
       if (imagesData.backdrops) {
         images.push(...imagesData.backdrops.slice(0, 4).map((img: any) => 
           `https://image.tmdb.org/t/p/w500${img.file_path}`
         ))
       }
       
-      // Agregar logos
       if (imagesData.logos) {
         images.push(...imagesData.logos.slice(0, 1).map((img: any) => 
           `https://image.tmdb.org/t/p/w500${img.file_path}`
@@ -1008,9 +888,6 @@ export class RealDataService {
     }
   }
 
-  /**
-   * Obtener cast de TMDB como fallback
-   */
   static async getTMDBCast(showTitle: string): Promise<Array<{name: string, image: string}>> {
     const TMDB_API_KEY = '8c247ea0b4b56ed2ff7d41c9a833aa77'
     const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
@@ -1018,7 +895,6 @@ export class RealDataService {
     try {
       console.log('Buscando cast en TMDB para:', showTitle)
       
-      // 1. Buscar la serie
       const searchResponse = await fetch(
         `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(showTitle)}`
       )
@@ -1031,14 +907,13 @@ export class RealDataService {
       
       const showId = searchData.results[0].id
       
-      // 2. Obtener cast
       const castResponse = await fetch(
         `${TMDB_BASE_URL}/tv/${showId}/credits?api_key=${TMDB_API_KEY}`
       )
       const castData = await castResponse.json()
       
       const cast = castData.cast
-        .slice(0, 8) // Tomar más actores para tener opciones
+        .slice(0, 8)
         .map((actor: any) => ({
           name: actor.name,
           image: actor.profile_path 
@@ -1048,20 +923,16 @@ export class RealDataService {
         .filter((actor: any) => actor.name && actor.name.trim() !== '')
       
       console.log('Cast obtenido de TMDB:', cast.length)
-      return cast.slice(0, 5) // Retornar solo los primeros 5
+      return cast.slice(0, 5)
     } catch (error) {
       console.error('Error obteniendo cast de TMDB:', error)
       return []
     }
   }
 
-  /**
-   * Obtener imágenes específicas para series populares
-   */
   static async getSpecificShowImages(showTitle: string): Promise<string[]> {
     const title = showTitle.toLowerCase()
     
-    // Mapeo de series populares con URLs de imágenes específicas
     const specificImages: Record<string, string[]> = {
       'wednesday': [
         'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/WednesdayNetflixPosterEnglish.jpg/1200px-WednesdayNetflixPosterEnglish.jpg',
@@ -1125,7 +996,6 @@ export class RealDataService {
       ]
     }
 
-    // Buscar coincidencias exactas o parciales
     for (const [key, images] of Object.entries(specificImages)) {
       if (title.includes(key) || key.includes(title)) {
         console.log(`Imágenes específicas encontradas para: ${showTitle}`)

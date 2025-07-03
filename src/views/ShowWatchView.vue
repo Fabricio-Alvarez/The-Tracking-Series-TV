@@ -21,22 +21,18 @@ const showTitle = computed(() => show.value?.title || '')
 
 const isLoading = ref(true)
 
-// Función para cargar datos reales de la API
 async function loadRealWatchData() {
   if (!show.value) return
   
   try {
-    // Intentar obtener temporadas reales de la API
     const realSeasons = await TVDBService.getSeasons(showId)
     if (realSeasons.length > 0) {
       seasons.value = realSeasons.map(season => ({
         number: season.seasonNumber,
-        watched: 0, // Se calcula desde localStorage
+        watched: 0,
         total: season.episodeCount
       }))
     }
-    
-    // Obtener cast real con imágenes
     try {
       const realCast = await RealDataService.getRealCast(showId, showTitle.value)
       if (realCast.length > 0) {
@@ -45,8 +41,6 @@ async function loadRealWatchData() {
     } catch (error) {
       console.log('No se pudo obtener cast de la API')
     }
-    
-    // Obtener imágenes reales de la serie
     try {
       const realImages = await RealDataService.getRealImages(showId, showTitle.value)
       if (realImages.length > 0) {

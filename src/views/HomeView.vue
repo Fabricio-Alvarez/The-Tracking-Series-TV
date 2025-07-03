@@ -1,8 +1,31 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useShowsStore } from '@/stores/shows'
-</script>
 
+const showsStore = useShowsStore()
+
+const watchlist = computed(() => showsStore.watchlist)
+const watched = computed(() => showsStore.watched)
+const favorites = computed(() => showsStore.favorites)
+
+const hasAnyShows = computed(
+  () => watchlist.value.length > 0 || watched.value.length > 0 || favorites.value.length > 0,
+)
+
+const recentShows = computed(() => {
+  const allShows = [...watchlist.value, ...watched.value, ...favorites.value]
+  
+  const uniqueShows = allShows.filter(
+    (show, index, self) => index === self.findIndex((s) => s.id === show.id),
+  )
+  return uniqueShows.slice(-6)
+})
+
+const handleImageError = (event: Event) => {
+  const img = event.target as HTMLImageElement
+  img.src = '/placeholder-poster.jpg'
+}
+</script>
 <template>
   <div class="home-view">
     <div class="hero-section">
@@ -75,47 +98,16 @@ import { useShowsStore } from '@/stores/shows'
       <h2>Series Recientes</h2>
       <div class="recent-grid">
         <div v-for="show in recentShows" :key="show.id" class="recent-show">
-          <img :src="show.poster" :alt="show.name" @error="handleImageError" />
+          <img :src="show.image" :alt="show.title" @error="handleImageError" />
           <div class="recent-show-info">
-            <h4>{{ show.name }}</h4>
-            <p>{{ show.network }}</p>
+            <h4>{{ show.title }}</h4>
+            <p>{{ show.network || 'Sin canal' }}</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useShowsStore } from '@/stores/shows'
-
-const showsStore = useShowsStore()
-
-const watchlist = computed(() => showsStore.watchlist)
-const watched = computed(() => showsStore.watched)
-const favorites = computed(() => showsStore.favorites)
-
-const hasAnyShows = computed(
-  () => watchlist.value.length > 0 || watched.value.length > 0 || favorites.value.length > 0,
-)
-
-const recentShows = computed(() => {
-  const allShows = [...watchlist.value, ...watched.value, ...favorites.value]
-
-  // Remover duplicados y tomar los últimos 6
-  const uniqueShows = allShows.filter(
-    (show, index, self) => index === self.findIndex((s) => s.id === show.id),
-  )
-
-  return uniqueShows.slice(-6)
-})
-
-const handleImageError = (event: Event) => {
-  const img = event.target as HTMLImageElement
-  img.src = '/placeholder-poster.jpg'
-}
-</script>
 
 <style scoped>
 .home-view {
